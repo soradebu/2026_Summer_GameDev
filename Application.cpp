@@ -17,7 +17,7 @@ Application::~Application(void)
 bool Application::SystemInit(void)
 {
 	//システム処理
-	SetWindowText("2516023 林田　孝裕");           //ゲームウィンドウのタイトル
+	SetWindowText("2516020 林田　孝裕");           //ゲームウィンドウのタイトル
 	SetGraphMode(SCREEN_SIZE_WID, SCREEN_SIZE_HIG, 32);
 	//ゲームウィンドウモードのサイズと色モードを設定
 	ChangeWindowMode(true);
