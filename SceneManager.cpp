@@ -29,7 +29,7 @@ bool SceneManager::SystemInit(void)
 
 	SetTransColor(0xff, 0x00, 0xff);			// “§‰ßF‚ÌÝ’è
 
-	//fader->SystemInit();
+	fader->SystemInit();
 
 	sceneChangeFlg = false;
 
