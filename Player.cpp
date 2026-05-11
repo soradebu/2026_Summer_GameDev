@@ -18,7 +18,7 @@ Player::~Player(void)
 
 bool Player::SystemInit(void)
 {
-	player_img = LoadGraph("image/sheet3.png");
+	player_img = LoadGraph("image/sheet2.png");
 
 	return true;
 }
@@ -42,12 +42,12 @@ void Player::Update(void)
 	
 	for (int i = 0; i < 8; i++) {
 		// DerivationGraph(切り出し開始X, 開始Y, 幅, 高さ, 元画像ハンドル)
-		walkImages[i] = DerivationGraph(i * 25,10, 115, 200, player_img);
+		walkImages[i] = DerivationGraph(i * 75,201, 96, 108, player_img);
 	}
 
 	if (CheckHitKey(KEY_INPUT_A)) {
 		playerPos.x -= MOVE_SPEED;
-		if (playerPos.x < (PLAYER_WID / 5))playerPos.x = PLAYER_WID / 5;
+		if (playerPos.x < (PLAYER_WID / 2))playerPos.x = PLAYER_WID / 2;
 		playerDir = static_cast<int>(AsoUtility::DIR::LEFT);
 	}
 
