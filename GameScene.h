@@ -4,13 +4,15 @@
 #include "StDefine.h"
 #include "Vector2.h"
 
+class Player;
+
 class GameScene
 {
 
 public:
 	static constexpr int HAIKEI_WID = 1920;       // 背景画像の横サイズ
 	static constexpr int HAIKEI_HIG = 1080;		  // 背景画像の縦サイズ
-	static constexpr int HAIKEI_MOVE_SPEED = 3;   // 背景の移動量
+	static constexpr int HAIKEI_MOVE_SPEED = 10;   // 背景の移動量
 
 	GameScene(void);
 	~GameScene(void);
@@ -26,6 +28,7 @@ public:
 
 private:
 
+	Player* player;                   //プレイヤークラスのインスタンスポインタ
 
 	// 敵の発生頻度用のカウンター
 	int enCounter;
@@ -33,6 +36,8 @@ private:
 	int prevShotKey, nowShotKey;		// キーの入力状態
 
 	int img;
+	
+	int scrollX;
 
 	E_SCENE_ID nextSceneID;         // 次に遷移するシーンのID
 

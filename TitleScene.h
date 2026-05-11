@@ -8,6 +8,9 @@ public:
 	static constexpr int TITLE_SIZE_WID = 1920;		// タイトル画像の横サイズ
 	static constexpr int TITLE_SIZE_HIG = 1080;		// タイトル画像の縦サイズ
 
+	static constexpr int START_WID = 480;		// スタートボタン画像の横サイズ
+	static constexpr int START_HIG = 480;		// スタートボタン画像の縦サイズ
+
 	TitleScene(void);
 	~TitleScene(void);
 
@@ -21,6 +24,11 @@ public:
 
 private:
 	int img;					    // 背景画像のハンドル番号
+	int start;					    // スタートボタン画像のハンドル番号
+	int start_after;			    // スタートボタン画像のハンドル番号
+
+	bool isTriggered;
+
 	E_SCENE_ID nextSceneID;		    // 次に遷移するシーンのID
 	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数
 };

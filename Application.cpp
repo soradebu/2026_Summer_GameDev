@@ -17,15 +17,18 @@ Application::~Application(void)
 // 初期化処理(最初の1回のみ)
 bool Application::SystemInit(void)
 {
-	// システム処理
-	SetWindowText("2516025 馬場　洸成");   // ゲームウィンドウのタイトル
-	SetGraphMode(SCREEN_SIZE_WID, SCREEN_SIZE_HIG, 32);
 
 	// ゲームウィンドウのサイズと色モードを設定
 	ChangeWindowMode(true);                // ゲームウィンドウの表示方法(false : フルスクリーン)
 
+	// システム処理
+	SetGraphMode(SCREEN_SIZE_WID, SCREEN_SIZE_HIG, 32);
+
 	if (DxLib_Init() == -1)return false;
 
+	SetDrawScreen(DX_SCREEN_BACK);				// 描画する画面を裏の画面に設定する
+
+	SetWindowText("2516025 馬場　洸成");   // ゲームウィンドウのタイトル
 	// 乱数の初期化
 	SRand((unsigned int)time(NULL));
 
@@ -57,7 +60,6 @@ void Application::Update(void)
 // 描画処理
 void Application::Draw(void)
 {
-	SetDrawScreen(DX_SCREEN_BACK);				// 描画する画面を裏の画面に設定する
 	ClearDrawScreen();							// 描画する画面の内容を消去(クリア)する
 
 	sceneMana->Draw();
