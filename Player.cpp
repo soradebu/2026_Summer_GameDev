@@ -4,7 +4,8 @@
 #include "SceneManager.h"
 #include "AsoUtility.h"
 #include "Vector2.h"
-#include"Player.h"
+#include"Enemy.h"
+#include "Player.h"
 
 Player::Player(GameScene* gs)
 {
@@ -18,7 +19,7 @@ Player::~Player(void)
 
 bool Player::SystemInit(void)
 {
-	player_img = LoadGraph("image/sheet2.png");
+	player_img = LoadGraph("image/sheet3.png");
 
 	return true;
 }
@@ -26,7 +27,7 @@ bool Player::SystemInit(void)
 void Player::GameInit(void)
 {
 	playerPos.x = PLAYER_WID ;
-	playerPos.y = PLAYER_HIG + 425;
+	playerPos.y = PLAYER_HIG + 570;
 
 	animCounter = 0;
 	frame = 0;
@@ -42,19 +43,19 @@ void Player::Update(void)
 	
 	for (int i = 0; i < 8; i++) {
 		// DerivationGraph(切り出し開始X, 開始Y, 幅, 高さ, 元画像ハンドル)
-		walkImages[i] = DerivationGraph(i * 75,201, 96, 108, player_img);
+		walkImages[i] = DerivationGraph(i * 20, 9, 128, 124, player_img);
 	}
 
 	if (CheckHitKey(KEY_INPUT_A)) {
 		playerPos.x -= MOVE_SPEED;
-		if (playerPos.x < (PLAYER_WID / 2))playerPos.x = PLAYER_WID / 2;
+		if (playerPos.x < (PLAYER_WID / 5))playerPos.x = PLAYER_WID / 5;
 		playerDir = static_cast<int>(AsoUtility::DIR::LEFT);
 	}
 
 	if (CheckHitKey(KEY_INPUT_D)) {
 		playerPos.x += MOVE_SPEED;
-		if (playerPos.x > (Application::SCREEN_SIZE_WID /2.5 - PLAYER_WID)) {
-			playerPos.x = Application::SCREEN_SIZE_WID /2.5 - PLAYER_WID;
+		if (playerPos.x > (Application::SCREEN_SIZE_WID - 600)) {
+			playerPos.x = Application::SCREEN_SIZE_WID - 600;
 		}
 		playerDir = static_cast<int>(AsoUtility::DIR::RIGHT);
 	}
@@ -66,7 +67,8 @@ void Player::Draw(void)
 
 	// アニメーション描画（30フレームごとにコマ送り）
 	frame = (GetNowCount() / 100) % 2;
-	DrawGraph(playerPos.x, playerPos.y, walkImages[frame], true);
+	DrawGraph(playerPos.x, playerPos.y,walkImages[frame], true); 
+
 }
 
 bool Player::Release(void)
