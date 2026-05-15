@@ -22,6 +22,7 @@ public:
 	E_SCENE_ID GetNextSceneID(void) { return nextSceneID; }
 
 private:
+
 	int goImage;                    // ゲームオーバー画面のハンドル番号
 	E_SCENE_ID nextSceneID;         // 次に遷移するシーンのID
 	int preNextKey, nowNextKey;

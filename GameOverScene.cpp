@@ -47,6 +47,7 @@ void  GameOverScene::Draw(void)
 {
 	int dx = (Application::SCREEN_SIZE_WID - GAMEOVER_WID) / 2;
 	int dy = (Application::SCREEN_SIZE_HIG - GAMEOVER_HIG) / 2;
+
 	DrawGraph(dx, dy, goImage, true);
 }
 

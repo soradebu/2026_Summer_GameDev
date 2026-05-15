@@ -68,8 +68,8 @@ void  TitleScene::Draw(void)
 	int dy = (Application::SCREEN_SIZE_HIG - TITLE_SIZE_HIG) / 2;
 	DrawGraph(dx, dy, img, true);
 
-	int sx = (Application::SCREEN_SIZE_WID - START_WID) / 2 - 180;
-	int sy = (Application::SCREEN_SIZE_HIG - START_HIG) / 2 + 60;
+	int sx = (Application::SCREEN_SIZE_WID - START_WID) / 2 ;
+	int sy = (Application::SCREEN_SIZE_HIG - START_HIG) / 2 + 100;
 	DrawGraph(sx, sy, start, true);
 
 	if (isTriggered) {

@@ -8,6 +8,7 @@ enum E_SCENE_ID
 {
 	E_SCENE_NON = -1,
 	E_SCENE_TITLE,			// タイトル画面
+	E_SCENE_SELECT,			// ステージ選択画面
 	E_SCENE_GAME,			// ゲームプレイ画面
 	E_SCENE_GAMEOVER,       // ゲームオーバー画面
 

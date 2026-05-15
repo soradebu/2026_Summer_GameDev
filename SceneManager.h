@@ -4,6 +4,7 @@
 
 class Fader;
 class TitleScene;
+class SelectScene;
 class GameScene;
 class GameOverScene;
 
@@ -22,8 +23,9 @@ public:
 private:
   Fader* fader;                   // フェードクラスのインスタンスのポインタ
   TitleScene* titleInst;          // タイトルシーンクラスのインスタンスのポインタ
+  SelectScene* selectInst;         // ステージ選択シーンクラスのインスタンスのポインタ
   GameScene* gameInst;            // ゲームシーンクラスのインスタンスのポインタ
-  GameOverScene* gameover;    // ゲームオーバーシーンクラスのインスタンスのポインタ
+  GameOverScene* gameover;        // ゲームオーバーシーンクラスのインスタンスのポインタ
 
   E_SCENE_ID scene_ID;            // 現在のシーンID
   E_SCENE_ID waitScene;           // シーンチェンジで次に遷移するシーンのID

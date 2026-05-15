@@ -40,5 +40,6 @@ private:
 	int scrollX;
 
 	E_SCENE_ID nextSceneID;         // 次に遷移するシーンのID
+	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数
 
 };

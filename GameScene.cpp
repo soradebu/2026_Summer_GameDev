@@ -23,7 +23,7 @@ bool GameScene::SystemInit(void)
 	if (player->SystemInit() == false)return false;
 
 	// ÉQÅ[ÉÄîwåiâÊëúÇÃì«Ç›çûÇ›
-	img = LoadGraph("image/forest.jpg");
+	img = LoadGraph("image/forest2.jpg");
 	if (img == -1)return false;
 
 	return true;
@@ -47,11 +47,20 @@ void GameScene::Update(void)
 {
 	player->Update();
 
+	prevSpaceKey = nowSpaceKey;
+	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
 	// îwåiÇç∂Ç÷ìÆÇ©Ç∑
 	scrollX -= HAIKEI_MOVE_SPEED;
 
-	if (scrollX <= -HAIKEI_WID) {
+	if (scrollX <= -HAIKEI_WID) 
+	{
 		scrollX = 0;
+	}
+
+	// ÉAÉbÉvÉgÉäÉKÅ[Ç≈ÉLÅ[ÇÃâüâ∫ÇîªíË
+	if (prevSpaceKey == 1 && nowSpaceKey == 0)
+	{
+		nextSceneID = E_SCENE_GAMEOVER;
 	}
 }
 
@@ -59,15 +68,13 @@ void GameScene::Update(void)
 //ï`âÊèàóù
 void GameScene::Draw(void)
 {
-
-
 	int haikeiPosY = (Application::SCREEN_SIZE_HIG - HAIKEI_HIG) / 2;
 
 	// 1ñáñ⁄ÇÃîwåi
-	DrawGraph(scrollX, 0, img, true);
+	DrawGraph(scrollX, haikeiPosY, img, true);
 
-	// 2ñáñ⁄ÇÃîwåiÅi1ñáñ⁄ÇÃÇ∑ÇÆâEó◊Ç…îzíuÅj
-	DrawGraph(scrollX + HAIKEI_WID, 0, img, true);
+	// 2ñáñ⁄ÇÃîwåi
+	DrawGraph(scrollX + HAIKEI_WID, haikeiPosY, img, true);
 
 	player->Draw();
 

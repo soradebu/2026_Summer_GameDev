@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "SceneManager.h"
 #include "TitleScene.h"
+#include "SelectScene.h"
 #include "GameScene.h"
 #include "Fader.h"
 #include "GameOverScene.h"
