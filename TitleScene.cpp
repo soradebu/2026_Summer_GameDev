@@ -57,7 +57,7 @@ void  TitleScene::Update(void)
 	// アップトリガーでキーの押下を判定
 	if (prevSpaceKey == 1 && nowSpaceKey == 0)
 	{
-		nextSceneID = E_SCENE_GAME;
+		nextSceneID = E_SCENE_SELECT;
 	}
 }
 

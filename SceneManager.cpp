@@ -10,6 +10,7 @@
 SceneManager::SceneManager(void)
 {
 	titleInst = nullptr;
+	selectInst = nullptr;
 	gameInst = nullptr;
 	fader = nullptr;
 	gameover = nullptr;
@@ -72,6 +73,10 @@ void SceneManager::Update(void)
 			titleInst->Update();
 			nextSceneId = titleInst->GetNextSceneID();
 			break;
+		case E_SCENE_SELECT:
+			selectInst->Update();
+			nextSceneId = selectInst->GetNextSceneID();
+			break;
 		case E_SCENE_GAME:
 			gameInst->Update();
 			nextSceneId = gameInst->GetNextSceneID();
@@ -99,6 +104,9 @@ void SceneManager::Draw(void)
 	case E_SCENE_TITLE:
 		titleInst->Draw();
 		break;
+	case E_SCENE_SELECT:
+		selectInst->Draw();
+		break;
 	case E_SCENE_GAME:
 		gameInst->Draw();
 		break;
@@ -114,6 +122,7 @@ void SceneManager::Draw(void)
 bool SceneManager::Release(void)
 {
 	ReleaseScene(E_SCENE_TITLE);
+	ReleaseScene(E_SCENE_SELECT);
 	ReleaseScene(E_SCENE_GAME);
 	ReleaseScene(E_SCENE_GAMEOVER);
 
@@ -141,6 +150,15 @@ bool SceneManager::ChangeScene(E_SCENE_ID id)
 			if (titleInst == nullptr)return false;
 			titleInst->SystemInit();
 			titleInst->GameInit();
+		}
+		break;
+	case E_SCENE_SELECT:
+		if (selectInst == nullptr)
+		{
+			selectInst = new SelectScene();
+			if (selectInst == nullptr)return false;
+			selectInst->SystemInit();
+			selectInst->GameInit();
 		}
 		break;
 	case E_SCENE_GAME:
@@ -174,6 +192,14 @@ void SceneManager::ReleaseScene(E_SCENE_ID id)
 			titleInst->Release();
 			delete titleInst;
 			titleInst = nullptr;
+		}
+		break;
+	case E_SCENE_SELECT:
+		if (selectInst != nullptr)
+		{
+			selectInst->Release();
+			delete selectInst;
+			selectInst = nullptr;
 		}
 		break;
 	case E_SCENE_GAME:

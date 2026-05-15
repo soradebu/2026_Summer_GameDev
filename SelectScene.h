@@ -5,11 +5,14 @@
 class SelectScene
 {
 public:
-	static constexpr int TITLE_SIZE_WID = 1920;		// タイトル画像の横サイズ
-	static constexpr int TITLE_SIZE_HIG = 1080;		// タイトル画像の縦サイズ
+	static constexpr int SELECT_WID = 1920;		      // select画像の横サイズ
+	static constexpr int SELECT_HIG = 1080;		      // select画像の縦サイズ
+	 
+	static constexpr int SELECT_BAR_WID = 768;		  // ステージ選択バーの横サイズ
+	static constexpr int SELECT_BAR_HID = 432;		  // ステージ選択バーの横サイズ
 
-	static constexpr int START_WID = 480;		// スタートボタン画像の横サイズ
-	static constexpr int START_HIG = 480;		// スタートボタン画像の縦サイズ
+	static constexpr int SELECT_BUTTON_WID = 768;	  // ステージ選択画像の横サイズ
+	static constexpr int SELECT_BUTTON_HIG = 432 ;	  // ステージ選択画像の縦サイズ
 
 	SelectScene(void);
 	~SelectScene(void);
@@ -24,11 +27,19 @@ public:
 
 private:
 	int img;					    // 背景画像のハンドル番号
-	int start;					    // スタートボタン画像のハンドル番号
-	int start_after;			    // スタートボタン画像のハンドル番号
+
+	int sb;							// セレクトバー画像のハンドル番号
+	int slc1;						// ステージ選択ボタン1のハンドル番号
+	int slc2;					    // ステージ選択ボタン2のハンドル番号
+	int slc3;						// ステージ選択ボタン3のハンドル番号
+
+	int idx;                        // 現在選択中のインデックス
 
 	bool isTriggered;
 
 	E_SCENE_ID nextSceneID;		    // 次に遷移するシーンのID
+
+	int prevUpkey, nowUpkey;        // 上キー(↑)の状態を保存する変数
+	int prevDownkey, nowDownkey;    // 下キー(↓)の状態を保存する変数
 	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数
 };
