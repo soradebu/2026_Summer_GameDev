@@ -31,24 +31,32 @@ void Knife::GameInit(void)
 
 void Knife::Update(void)
 {
-	if (CutFlg) 
-	{
-		// 弾が発射されている状態
-			// 弾を移動させる
-		pos.y -= speed;
 
-		if (pos.y < 0) {
+#if
+	if (CutFlg) {
+		// 弾が発射されている状態
+		// 弾を移動させる
+		pos.x += speed;
+		pos.y += speed*2;
+
+		if (pos.x < 220) {
+			pos.x -= speed;
+		}
+
+		if (pos.y > 700 ) {
 			// 弾がウィンドウ外に出たので、未発射状態にする
 			CutFlg = false;
 		}
 	}
+#endif
 }
 
 void Knife::Draw(void)
 {
+	
 	if (CutFlg == true)
 	{
-		DrawGraph(pos.x, pos.y, img, true);
+		DrawGraph(pos.x + 50, pos.y, img, true);
 	}
 
 }
