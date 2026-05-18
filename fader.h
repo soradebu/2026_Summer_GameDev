@@ -4,7 +4,7 @@
 class Fader
 {
 public:
-	static constexpr float FADE_SPEED_ALPHA = 2;    // フェードの速さ
+	static constexpr float FADE_SPEED_ALPHA = 5;    // フェードの速さ
 
 	Fader(void);             // コンストラクタ
 	~Fader(void);            // デストラクタ

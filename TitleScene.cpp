@@ -9,6 +9,10 @@ TitleScene::TitleScene(void)
 	start = -1;
 
 	start_after = -1;
+
+	bgm = -1;
+
+	slcse = -1;
 }
 
 TitleScene::~TitleScene(void)
@@ -31,6 +35,12 @@ bool TitleScene::SystemInit(void)
 	start_after = LoadGraph("image/Start_after.png");
 	if (start_after == -1)return false;
 
+	bgm = LoadSoundMem("sound/Title.wav");
+	if (bgm == -1)return false;
+
+	slcse = LoadSoundMem("sound/select.mp3");
+	if (slcse == -1)return false;
+
 	return true;
 }
 // ゲーム起動・再開時に必ず呼び出す処理
@@ -41,6 +51,10 @@ void  TitleScene::GameInit(void)
 	nextSceneID = E_SCENE_TITLE;
 
 	prevSpaceKey = nowSpaceKey = 0;
+
+	StopSoundMem(bgm);
+
+	PlaySoundMem(bgm , DX_PLAYTYPE_BACK ,true);
 }
 
 // 更新処理
@@ -52,11 +66,15 @@ void  TitleScene::Update(void)
 	if (prevSpaceKey == 0 && nowSpaceKey == 1)
 	{
 		isTriggered = true;
+
+		PlaySoundMem(slcse, DX_PLAYTYPE_BACK, false);
 	}
 
 	// アップトリガーでキーの押下を判定
 	if (prevSpaceKey == 1 && nowSpaceKey == 0)
 	{
+		StopSoundMem(bgm);
+
 		nextSceneID = E_SCENE_SELECT;
 	}
 }
@@ -86,6 +104,16 @@ bool  TitleScene::Release(void)
 	if (DeleteGraph(img) == -1)return false;
 
 	if (DeleteGraph(start) == -1)return false;
+
+	if (bgm != -1)
+	{
+		if (DeleteSoundMem(bgm) == -1) return false;
+	}
+
+	if (slcse != -1)
+	{
+		if (DeleteSoundMem(slcse) == -1) return false;
+	}
 
 	return true;
 
