@@ -65,4 +65,8 @@ void Kunai::KunaiCreate(Vector2 bpos)
 {
 	pos = bpos;
 	ThrowFlg = true;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> parent of dabdcb7 (Revert "攻撃手段の追加、ゲームシーンの更新")

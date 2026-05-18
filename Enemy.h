@@ -25,6 +25,8 @@ public:
 
 	// “G‚Ì¶‘¶ó‘Ô‚ğæ“¾‚·‚é
 	virtual bool GetAlive(void) { return aliveFlg; }
+	//“G‚ÌêŠ‚ğæ“¾‚·‚é
+	Vector2 GetPlayerPos(void) { return Pos; }
 	//“G‚Ì¶‘¶ó‘Ô‚ğİ’è‚·‚é
 	virtual void SetAlive(bool bflg) { aliveFlg = bflg; }
 
