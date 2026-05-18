@@ -26,21 +26,36 @@ bool SelectScene::SystemInit(void)
 	sb = LoadGraph("image/SelectBar.png");
 	if (sb == -1)return false;
 
-	// スタートボタン画像の読み込み
+	// ステージ1画像の読み込み
 	slc1 = LoadGraph("image/Select1.png");
 	if (slc1 == -1)return false;
 
-	// スタートボタン画像の読み込み
+	// ステージ2画像の読み込み
 	slc2 = LoadGraph("image/Select2.png");
-	if (slc1 == -1)return false;
+	if (slc2 == -1)return false;
 
-	// スタートボタン画像の読み込み
+	// ステージ3画像の読み込み
 	slc3 = LoadGraph("image/Select3.png");
-	if (slc1 == -1)return false;
+	if (slc3 == -1)return false;
+
+	// ステージ1クリック後画像の読み込み
+	slc1_after = LoadGraph("image/Select1_after.png");
+	if (slc1_after == -1)return false;
+
+	// ステージ2クリック後画像の読み込み
+	slc2_after = LoadGraph("image/Select2_after.png");
+	if (slc2_after == -1)return false;
+
+	// ステージ3クリック後画像の読み込み
+	slc3_after = LoadGraph("image/Select3_after.png");
+	if (slc3_after == -1)return false;
 
 	// ゲーム背景画像の読み込み
 	img = LoadGraph("image/select.jpeg");
 	if (img == -1)return false;
+
+	slcse = LoadSoundMem("sound/select.mp3");
+	if (slcse == -1)return false;
 
 	return true;
 
@@ -49,13 +64,15 @@ bool SelectScene::SystemInit(void)
 //ゲーム起動・再開時に必ず呼び出す処理
 void SelectScene::GameInit(void)
 {
-	prevUpkey = nowUpkey = 0;
-	prevDownkey = nowDownkey = 0;
-	prevSpaceKey = nowSpaceKey = 0;
+	isTriggered = false;
 
 	idx = 0;
 
 	nextSceneID = E_SCENE_SELECT;
+
+	prevUpkey = nowUpkey = 0;
+	prevDownkey = nowDownkey = 0;
+	prevSpaceKey = nowSpaceKey = 0;
 
 }
 //更新処理
@@ -69,6 +86,13 @@ void SelectScene::Update(void)
 
 	prevSpaceKey = nowSpaceKey;
 	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
+
+	if (prevSpaceKey == 0 && nowSpaceKey == 1)
+	{
+		isTriggered = true;
+
+		PlaySoundMem(slcse, DX_PLAYTYPE_BACK, false);
+	}
 
 	// 上キーが離された瞬間
 	if (prevUpkey == 1 && nowUpkey == 0)
@@ -118,15 +142,42 @@ void SelectScene::Draw(void)
 
 	int sx1 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
 	int sy1 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 - 300;
-	DrawGraph(sx1, sy1, slc1, true);
+
 
 	int sx2 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
 	int sy2 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2;
-	DrawGraph(sx2, sy2, slc2, true);
+
 
 	int sx3 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
 	int sy3 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 + 300;
-	DrawGraph(sx3, sy3, slc3, true);
+
+	if (isTriggered)
+	{
+		if (idx == 0)
+		{
+			DrawGraph(sx1, sy1, slc1_after, true);
+			DrawGraph(sx2, sy2, slc2, true);
+			DrawGraph(sx3, sy3, slc3, true);
+		}
+		else if (idx == 1)
+		{
+			DrawGraph(sx2, sy2, slc2_after, true);
+			DrawGraph(sx1, sy1, slc1, true);
+			DrawGraph(sx3, sy3, slc3, true);
+		}
+		else
+		{
+			DrawGraph(sx3, sy3, slc3_after, true);
+			DrawGraph(sx1, sy1, slc1, true);
+			DrawGraph(sx2, sy2, slc2, true);
+		}
+	}
+	else
+	{
+		DrawGraph(sx1, sy1, slc1, true);
+		DrawGraph(sx2, sy2, slc2, true);
+		DrawGraph(sx3, sy3, slc3, true);
+	}
 
 	if (idx == 0)
 	{
@@ -146,16 +197,29 @@ void SelectScene::Draw(void)
 		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 + 300;
 		DrawGraph(sbx, sby, sb, true);
 	}
+
+
 }
  
 //開放処理（最後の一回のみ実行）
 bool SelectScene::Release(void)
 {
 	if (DeleteGraph(img) == -1)return false;
+
 	if (DeleteGraph(sb) == -1)return false;
+
 	if (DeleteGraph(slc1) == -1)return false;
 	if (DeleteGraph(slc2) == -1)return false;
 	if (DeleteGraph(slc3) == -1)return false;
+
+	if (DeleteGraph(slc1_after) == -1)return false;
+	if (DeleteGraph(slc2_after) == -1)return false;
+	if (DeleteGraph(slc3_after) == -1)return false;
+
+	if (slcse != -1)
+	{
+		if (DeleteSoundMem(slcse) == -1) return false;
+	}
 
 	return true;
 }

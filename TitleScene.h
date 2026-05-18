@@ -27,6 +27,9 @@ private:
 	int start;					    // スタートボタン画像のハンドル番号
 	int start_after;			    // スタートボタン画像のハンドル番号
 
+	int bgm;                        // BGMのハンドル番号
+	int slcse;                     // クリック効果音のハンドル番号
+
 	bool isTriggered;
 
 	E_SCENE_ID nextSceneID;		    // 次に遷移するシーンのID

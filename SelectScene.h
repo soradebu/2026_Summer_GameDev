@@ -33,6 +33,12 @@ private:
 	int slc2;					    // ステージ選択ボタン2のハンドル番号
 	int slc3;						// ステージ選択ボタン3のハンドル番号
 
+	int slc1_after;					// ステージ選択後ボタン1のハンドル番号
+	int slc2_after;					// ステージ選択後ボタン2のハンドル番号
+	int slc3_after;				    // ステージ選択後ボタン3のハンドル番号
+
+	int slcse;                     // クリック効果音のハンドル番号
+
 	int idx;                        // 現在選択中のインデックス
 
 	bool isTriggered;

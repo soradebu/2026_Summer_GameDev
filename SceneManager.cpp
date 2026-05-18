@@ -114,7 +114,8 @@ void SceneManager::Draw(void)
 		gameover->Draw();
 		break;
 	}
-	//fader->Draw();
+
+	fader->Draw();
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "Current Scene: %d", scene_ID);
 }
 
