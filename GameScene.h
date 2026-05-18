@@ -4,7 +4,10 @@
 #include "StDefine.h"
 #include "Vector2.h"
 
+class Enemy;
 class Player;
+class Knife;
+class Kunai;
 
 class GameScene
 {
@@ -25,10 +28,14 @@ public:
 
 	E_SCENE_ID GetNextSceneID(void) { return nextSceneID; }
 
+	void Collision(void);
 
 private:
 
 	Player* player;                   //プレイヤークラスのインスタンスポインタ
+	Enemy* enemy;                     //エネミークラスのインスタンスのポインタ
+	Knife* knife;                     //ナイフクラスのインスタンスのポインタ
+	Kunai* kunai;                     //クナイクラスのインスタンスのポインタ
 
 	// 敵の発生頻度用のカウンター
 	int enCounter;

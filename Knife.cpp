@@ -31,8 +31,6 @@ void Knife::GameInit(void)
 
 void Knife::Update(void)
 {
-
-#if
 	if (CutFlg) {
 		// 弾が発射されている状態
 		// 弾を移動させる
@@ -48,7 +46,6 @@ void Knife::Update(void)
 			CutFlg = false;
 		}
 	}
-#endif
 }
 
 void Knife::Draw(void)
