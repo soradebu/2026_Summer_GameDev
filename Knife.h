@@ -35,9 +35,10 @@ private:
 
 	int img;                          //弾の画像のハンドル番号
 	Vector2 pos;
+	Vector2 vel;
 	bool CutFlg;
 	float angle = 270.0f;    //現在の角度
 	float circle = 100.0f;  //剣の届く距離（半径）
-	float speed = 5.0f;    //剣を振るスピード
+	int speed = 5;    //剣を振るスピード
 };
 
