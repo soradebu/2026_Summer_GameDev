@@ -84,9 +84,6 @@ private:
 	//•à‚«‚Ì‰æ‘œ
 	int runImages[6];
 
-	//•à‚«‚Ì‰æ‘œ
-	//int walkImages[8];
-
 	//¶‘¶ƒtƒ‰ƒO
 	bool aliveFlg;
 

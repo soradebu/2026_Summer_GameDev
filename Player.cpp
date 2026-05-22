@@ -30,7 +30,7 @@ bool Player::SystemInit(void)
 	player_jump = LoadGraph("image/Jump.png");
 	if (player_jump == -1) return false;
 
-	for ( int i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		// 待機アニメーション
 		playerImages[static_cast<int>(state::IDLE)][i] = DerivationGraph(i * 100, 0, 100, 100, player_img);
@@ -46,11 +46,11 @@ bool Player::SystemInit(void)
 
 void Player::GameInit(void)
 {
-	playerPos.x = PLAYER_WID ;
+	playerPos.x = PLAYER_WID;
 	playerPos.y = PLAYER_HIG + 570;
 
 	jumpSpeed = 0.0f;
-	gravity = 0.8f;      
+	gravity = 0.8f;
 	isJumping = false;
 
 	animCounter = 0;
@@ -105,7 +105,7 @@ void Player::Update(void)
 
 	if (!isJumping &&
 		(CheckHitKey(KEY_INPUT_SPACE)
-		|| isPadBtnPressed))
+			|| isPadBtnPressed))
 	{
 		jumpSpeed = -15.0f; // 上方向への速度
 		isJumping = true;
@@ -114,8 +114,8 @@ void Player::Update(void)
 	if (isJumping)
 	{
 		currentstate = state::JUMP;
-		playerPos.y += jumpSpeed; 
-		jumpSpeed += gravity;  
+		playerPos.y += jumpSpeed;
+		jumpSpeed += gravity;
 
 
 		// 地面に戻ってきたか判定
@@ -153,7 +153,7 @@ void Player::Draw(void)
 		//左右反転して描画する
 		DrawTurnGraph(playerPos.x, playerPos.y, currentHandle, true);
 	}
-	else 
+	else
 	{
 		// 右向き時（RIGHT）通常の向きで描画する
 		DrawGraph(playerPos.x, playerPos.y, currentHandle, true);

@@ -107,7 +107,7 @@ void SelectScene::Update(void)
 	static bool prevStickUp = false;
 	static bool prevStickDown = false;
 
-	bool stickUpReleased = (prevStickUp && !nowStickUp); 
+	bool stickUpReleased = (prevStickUp && !nowStickUp);
 	bool stickDownReleased = (prevStickDown && !nowStickDown);
 
 	prevStickUp = nowStickUp;		// 現在の位置保存
@@ -115,7 +115,7 @@ void SelectScene::Update(void)
 
 	// 上キーが離された瞬間
 	if (prevUpkey == 1 && nowUpkey == 0 || stickUpReleased)
-	{ 
+	{
 		idx--;
 		if (idx < 0)
 		{
@@ -125,9 +125,9 @@ void SelectScene::Update(void)
 
 	// アップトリガーでキーの押下を判定
 	if (prevDownkey == 1 && nowDownkey == 0 || stickDownReleased)
-	{ 
+	{
 		idx++;
-		if (idx > 2 )
+		if (idx > 2)
 		{
 			idx = 0;
 		}
@@ -212,10 +212,10 @@ void SelectScene::Draw(void)
 		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 - 300;
 		DrawGraph(sbx, sby, sb, true);
 	}
-	else if(idx == 1)
+	else if (idx == 1)
 	{
 		int sbx = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 ;
+		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2;
 		DrawGraph(sbx, sby, sb, true);
 	}
 	else
@@ -227,7 +227,7 @@ void SelectScene::Draw(void)
 
 
 }
- 
+
 //開放処理（最後の一回のみ実行）
 bool SelectScene::Release(void)
 {
@@ -250,5 +250,3 @@ bool SelectScene::Release(void)
 
 	return true;
 }
-
-

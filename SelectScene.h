@@ -7,12 +7,12 @@ class SelectScene
 public:
 	static constexpr int SELECT_WID = 1920;		      // select画像の横サイズ
 	static constexpr int SELECT_HIG = 1080;		      // select画像の縦サイズ
-	 
+
 	static constexpr int SELECT_BAR_WID = 768;		  // ステージ選択バーの横サイズ
 	static constexpr int SELECT_BAR_HID = 432;		  // ステージ選択バーの横サイズ
 
 	static constexpr int SELECT_BUTTON_WID = 768;	  // ステージ選択画像の横サイズ
-	static constexpr int SELECT_BUTTON_HIG = 432 ;	  // ステージ選択画像の縦サイズ
+	static constexpr int SELECT_BUTTON_HIG = 432;	  // ステージ選択画像の縦サイズ
 
 	SelectScene(void);
 	~SelectScene(void);

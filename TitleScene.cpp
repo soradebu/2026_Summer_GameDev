@@ -55,7 +55,7 @@ void  TitleScene::GameInit(void)
 
 	StopSoundMem(bgm);
 
-	PlaySoundMem(bgm , DX_PLAYTYPE_BACK ,true);
+	PlaySoundMem(bgm, DX_PLAYTYPE_BACK, true);
 }
 
 // çXêVèàóù
@@ -93,7 +93,7 @@ void  TitleScene::Draw(void)
 	int dy = (Application::SCREEN_SIZE_HIG - TITLE_SIZE_HIG) / 2;
 	DrawGraph(dx, dy, img, true);
 
-	int sx = (Application::SCREEN_SIZE_WID - START_WID) / 2 ;
+	int sx = (Application::SCREEN_SIZE_WID - START_WID) / 2;
 	int sy = (Application::SCREEN_SIZE_HIG - START_HIG) / 2 + 100;
 	DrawGraph(sx, sy, start, true);
 
