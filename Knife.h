@@ -20,7 +20,7 @@ public:
 
 	bool SystemInit(void);         //初期化処理(最初の一回のみ実行)
 	void GameInit(void);                   //ゲーム起動・再開時に必ず呼び出す処理
-	void Update(void);                     //更新処理
+	void Update(Vector2 playerPos);                     //更新処理
 	void Draw(void);                       //描画処理
 	bool Release(void);            //開放処理（最後の一回のみ実行
 
@@ -30,6 +30,9 @@ public:
 	void GetCutFlgOff(void) { CutFlg = false; }
 	Vector2 GetKnifePos(void) { return pos; }
 
+	// 半径を取る関数（当たり判定で使います）
+	float GetRadius(void) const { return radius; }
+
 private:
 	GameScene* gInst;
 
@@ -37,8 +40,13 @@ private:
 	Vector2 pos;
 	Vector2 vel;
 	bool CutFlg;
-	float angle = 270.0f;    //現在の角度
-	float circle = 100.0f;  //剣の届く距離（半径）
-	int speed = 5;    //剣を振るスピード
-};
 
+
+	float angle;        //現在の角度
+	float angleSpeed;   //1フレームに進む角度の速さ
+	float endAngle;     //振り下ろしの終着点
+	float knifeDistance;  // プレイヤーの中心からナイフまでの距離（手の長さ）
+	float imageRotation;  // ナイフの画像自体の傾き角度
+	float radius;
+	int speed = 5;      //剣を振るスピード
+};
