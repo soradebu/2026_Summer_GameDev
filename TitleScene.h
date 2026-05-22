@@ -30,7 +30,11 @@ private:
 	int bgm;                        // BGMのハンドル番号
 	int slcse;                     // クリック効果音のハンドル番号
 
-	bool isTriggered;
+	bool isTriggered;               //KEY
+
+	int	 padInput;
+	bool isPadBtnPressed;			//PAD
+
 
 	E_SCENE_ID nextSceneID;		    // 次に遷移するシーンのID
 	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数

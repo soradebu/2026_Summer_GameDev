@@ -1,6 +1,7 @@
 #include  <DxLib.h>
 #include "SelectScene.h"
 #include "Application.h"
+#include "InputManager.h"
 
 SelectScene::SelectScene(void)
 {
@@ -78,6 +79,22 @@ void SelectScene::GameInit(void)
 //更新処理
 void SelectScene::Update(void)
 {
+
+	InputManager& inputIns = InputManager::GetInstance();
+
+	InputManager::JOYPAD_IN_STATE state =
+		inputIns.GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
+
+	padInput = GetJoypadInputState(DX_INPUT_PAD1);
+
+	isPadBtnPressed = (padInput & PAD_INPUT_1);
+
+	// 左アナログキーのX値
+	int analogKeyY = state.AKeyLY;
+
+	bool nowStickUp = (analogKeyY < -10000);
+	bool nowStickDown = (analogKeyY > 10000);
+
 	prevUpkey = nowUpkey;
 	nowUpkey = CheckHitKey(KEY_INPUT_UP);
 
@@ -87,15 +104,17 @@ void SelectScene::Update(void)
 	prevSpaceKey = nowSpaceKey;
 	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
 
-	if (prevSpaceKey == 0 && nowSpaceKey == 1)
-	{
-		isTriggered = true;
+	static bool prevStickUp = false;
+	static bool prevStickDown = false;
 
-		PlaySoundMem(slcse, DX_PLAYTYPE_BACK, false);
-	}
+	bool stickUpReleased = (prevStickUp && !nowStickUp); 
+	bool stickDownReleased = (prevStickDown && !nowStickDown);
+
+	prevStickUp = nowStickUp;		// 現在の位置保存
+	prevStickDown = nowStickDown;	// 現在の位置保存
 
 	// 上キーが離された瞬間
-	if (prevUpkey == 1 && nowUpkey == 0)
+	if (prevUpkey == 1 && nowUpkey == 0 || stickUpReleased)
 	{ 
 		idx--;
 		if (idx < 0)
@@ -105,17 +124,25 @@ void SelectScene::Update(void)
 	}
 
 	// アップトリガーでキーの押下を判定
-	if (prevDownkey == 1 && nowDownkey == 0)
+	if (prevDownkey == 1 && nowDownkey == 0 || stickDownReleased)
 	{ 
 		idx++;
-		if (idx > 2)
+		if (idx > 2 )
 		{
 			idx = 0;
 		}
 	}
 
+	if (prevSpaceKey == 0 && nowSpaceKey == 1 || isPadBtnPressed)
+	{
+		isTriggered = true;
+
+		PlaySoundMem(slcse, DX_PLAYTYPE_BACK, false);
+	}
+
+
 	// アップトリガーでキーの押下を判定
-	if (prevSpaceKey == 1 && nowSpaceKey == 0)
+	if (prevSpaceKey == 1 && nowSpaceKey == 0 || isPadBtnPressed)
 	{
 		if (idx == 0)
 		{

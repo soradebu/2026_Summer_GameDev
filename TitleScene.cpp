@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include"TitleScene.h"
 #include "Application.h"
+#include "InputManager.h"
 
 TitleScene::TitleScene(void)
 {
@@ -63,7 +64,13 @@ void  TitleScene::Update(void)
 	prevSpaceKey = nowSpaceKey;
 	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
 
-	if (prevSpaceKey == 0 && nowSpaceKey == 1)
+	InputManager& inputIns = InputManager::GetInstance();
+
+	padInput = GetJoypadInputState(DX_INPUT_PAD1);
+
+	isPadBtnPressed = (padInput & PAD_INPUT_1);
+
+	if (prevSpaceKey == 0 && nowSpaceKey == 1 || isPadBtnPressed)
 	{
 		isTriggered = true;
 
@@ -71,7 +78,7 @@ void  TitleScene::Update(void)
 	}
 
 	// アップトリガーでキーの押下を判定
-	if (prevSpaceKey == 1 && nowSpaceKey == 0)
+	if (prevSpaceKey == 1 && nowSpaceKey == 0 || isPadBtnPressed)
 	{
 		StopSoundMem(bgm);
 

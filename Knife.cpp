@@ -1,7 +1,8 @@
 ﻿#include<DxLib.h>
-#include"Player.h"
+#include "Player.h"
 #include "Knife.h"
-#include"SceneManager.h"
+#include "SceneManager.h"
+#include "AsoUtility.h"
 
 Knife::Knife(GameScene* gs)
 {
@@ -31,24 +32,22 @@ void Knife::GameInit(void)
 
 void Knife::Update(void)
 {
-
-#if
-	if (CutFlg) {
-		// 弾が発射されている状態
-		// 弾を移動させる
+	if (CutFlg) 
+	{
 		pos.x += speed;
 		pos.y += speed*2;
 
-		if (pos.x < 220) {
+		if (pos.x < 220)
+		{
 			pos.x -= speed;
 		}
 
-		if (pos.y > 700 ) {
+		if (pos.y > 700 ) 
+		{
 			// 弾がウィンドウ外に出たので、未発射状態にする
 			CutFlg = false;
 		}
 	}
-#endif
 }
 
 void Knife::Draw(void)
@@ -56,7 +55,15 @@ void Knife::Draw(void)
 	
 	if (CutFlg == true)
 	{
-		DrawGraph(pos.x + 50, pos.y, img, true);
+		if (dir == static_cast<int>(AsoUtility::DIR::LEFT))
+		{
+			//左右反転して描画する
+			DrawTurnGraph(pos.x -50, pos.y, img, true);
+		}
+		else
+		{
+			DrawGraph(pos.x + 50, pos.y, img, true);
+		}
 	}
 
 }
@@ -68,8 +75,9 @@ bool Knife::Release(void)
 	return true;
 }
 
-void Knife::KnifeCreate(Vector2 bpos)
+void Knife::KnifeCreate(Vector2 bpos, int dir)
 {
 	pos = bpos;
+	this->dir = dir; //ナイフの向きを記憶
 	CutFlg = true;
 }

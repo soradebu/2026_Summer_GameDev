@@ -2,11 +2,15 @@
 #include "GameScene.h"
 #include "Application.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "Knife.h"
 
 GameScene::GameScene(void)
 {
 	img = -1;
 	player = nullptr;
+	enemy = nullptr;
+	knife = nullptr;
 }
 
 GameScene::~GameScene(void)
@@ -20,10 +24,20 @@ bool GameScene::SystemInit(void)
 	player = new Player(this);
 	if (player == nullptr)return false;
 
+	enemy = new Enemy(this);
+	if (enemy == nullptr)return false;
+
+	knife = new Knife(this);
+	if (knife == nullptr)return false;
+
 	if (player->SystemInit() == false)return false;
 
+	if (enemy->SystemInit() == false)return false;
+
+	if (knife->SystemInit() == false)return false;
+
 	// ÉQÅ[ÉÄîwåiâÊëúÇÃì«Ç›çûÇ›
-	img = LoadGraph("image/forest2.jpg");
+	img = LoadGraph("image/stage2.jpg");
 	if (img == -1)return false;
 
 	return true;
@@ -34,6 +48,8 @@ bool GameScene::SystemInit(void)
 void GameScene::GameInit(void)
 {
 	player->GameInit();
+	enemy->GameInit();
+	knife->GameInit();
 
 	enCounter = 0;
 	prevShotKey = nowShotKey = 0;
@@ -46,17 +62,28 @@ void GameScene::GameInit(void)
 void GameScene::Update(void)
 {
 	player->Update();
+	enemy->Update();
+	knife->Update();
 
 	prevSpaceKey = nowSpaceKey;
-	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
-	// îwåiÇç∂Ç÷ìÆÇ©Ç∑
-	scrollX -= HAIKEI_MOVE_SPEED;
+	nowSpaceKey = CheckHitKey(KEY_INPUT_M);
 
-	if (scrollX <= -HAIKEI_WID) 
+	//-----------------------
+	//íeÇÃî≠éÀèàóù
+	//-----------------------
+	if (knife->GetCutFlg() == false)
 	{
-		scrollX = 0;
-	}
+		//íeÇ™ñ¢î≠éÀèÛë‘Ç»ÇÃÇ≈ÅAíeÇë≈Ç¬Ç±Ç∆Ç™Ç≈Ç´ÇÈ
+		prevShotKey = nowShotKey;
 
+		nowShotKey = CheckHitKey(KEY_INPUT_G);
+		if (prevShotKey == 0 && nowShotKey == 1)
+		{
+			//É_ÉEÉìÉgÉäÉKÅ[Ç≈ÉLÅ[ÇÃèÛë‘ÇîªíËÇµÇƒÅAíeÇî≠éÀÇ∑ÇÈ
+			Vector2 pPos = player->GetPlayerPos();
+			pPos.y -= Player::PLAYER_WID;  // ÉvÉåÉCÉÑÅ[ÇÃå¸Ç´ÇéÊìæ
+		}
+	}
 	// ÉAÉbÉvÉgÉäÉKÅ[Ç≈ÉLÅ[ÇÃâüâ∫ÇîªíË
 	if (prevSpaceKey == 1 && nowSpaceKey == 0)
 	{
@@ -68,24 +95,40 @@ void GameScene::Update(void)
 //ï`âÊèàóù
 void GameScene::Draw(void)
 {
+	int haikeiPosX = (Application::SCREEN_SIZE_WID - HAIKEI_WID) / 2;
 	int haikeiPosY = (Application::SCREEN_SIZE_HIG - HAIKEI_HIG) / 2;
+	
 
 	// 1ñáñ⁄ÇÃîwåi
-	DrawGraph(scrollX, haikeiPosY, img, true);
+	DrawGraph(haikeiPosX, haikeiPosY, img, true);
+	//DrawGraph(haikeiPosX, haikeiPosY, img, true);
 
 	// 2ñáñ⁄ÇÃîwåi
-	DrawGraph(scrollX + HAIKEI_WID, haikeiPosY, img, true);
+	//DrawGraph(scrollX + HAIKEI_WID, haikeiPosY, img, true);
 
 	player->Draw();
 
+	enemy->Draw();
+
+	knife->Draw();
 }
 
 //äJï˙èàóùÅiç≈å„ÇÃàÍâÒÇÃÇ›é¿çsÅj
 bool GameScene::Release(void)
 {
+	if (DeleteGraph(img) == -1)return false;
+
 	player->Release();
 	delete player;
 	player = nullptr;
+
+	enemy->Release();
+	delete enemy;
+	enemy = nullptr;
+
+	knife->Release();
+	delete knife;
+	knife = nullptr;
 
 	return true;
 }

@@ -4,7 +4,9 @@
 #include "StDefine.h"
 #include "Vector2.h"
 
+class Enemy;
 class Player;
+class Knife;
 
 class GameScene
 {
@@ -29,6 +31,8 @@ public:
 private:
 
 	Player* player;                   //プレイヤークラスのインスタンスポインタ
+	Enemy* enemy;                     //エネミークラスのインスタンスのポインタ
+	Knife* knife;                     //ナイフクラスのインスタンスのポインタ
 
 	// 敵の発生頻度用のカウンター
 	int enCounter;
@@ -36,7 +40,7 @@ private:
 	int prevShotKey, nowShotKey;		// キーの入力状態
 
 	int img;
-	
+
 	int scrollX;
 
 	E_SCENE_ID nextSceneID;         // 次に遷移するシーンのID

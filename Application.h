@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class SceneManager;
 
@@ -7,6 +8,9 @@ class Application
 public:
 	static constexpr int SCREEN_SIZE_WID = 1920;    // ゲーム画面の縦サイズ 
 	static constexpr int SCREEN_SIZE_HIG = 1080;    // ゲーム画面の縦サイズ
+
+	static const std::string PATH_IMAGE;
+	static const std::string PATH_IMG_PLAYER;
 
 	Application(void);                             // コンストラクタ
 	~Application(void);                            // デストラクタ

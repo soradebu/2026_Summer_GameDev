@@ -37,9 +37,13 @@ private:
 	int slc2_after;					// ステージ選択後ボタン2のハンドル番号
 	int slc3_after;				    // ステージ選択後ボタン3のハンドル番号
 
-	int slcse;                     // クリック効果音のハンドル番号
+	int slcse;						// クリック効果音のハンドル番号
 
 	int idx;                        // 現在選択中のインデックス
+
+
+	int	 padInput;
+	bool isPadBtnPressed;			//PAD
 
 	bool isTriggered;
 

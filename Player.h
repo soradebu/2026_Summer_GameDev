@@ -12,7 +12,7 @@ public:
 	static constexpr int ANIM_NUMS = 4;     //方向毎のアニメーション数
 	static constexpr int CHARA_MAX = ANIM_NUMS * static_cast<int>(AsoUtility::DIR::MAX);
 
-	static constexpr int MOVE_SPEED = 4;    //一回の移動量
+	static constexpr int MOVE_SPEED = 8;    //一回の移動量
 	static constexpr int ANIM_INTERVAL = 10;  //アニメーションの更新間隔
 
 	static constexpr int  PLAYER_HP_MAX = 100;   //プレイヤーのHPの最大値
@@ -39,20 +39,60 @@ public:
 private:
 	GameScene* gInst;
 
+	enum class state
+	{
+		IDLE,   // 待機
+		RUN,	// 走行
+		JUMP,   // ジャンプ
+		MAX
+	};
+
+	// ジャンプの初期速度
+	float jumpSpeed;
+
+	// 重力
+	float gravity;
+
+	// 今ジャンプ中かどうかのフラグ
+	bool isJumping;
+
+	state currentstate;
+
+	static const int MAX_ANIMS = 8;
+	int playerImages[static_cast<int>(state::MAX)][MAX_ANIMS];
+
 	//プレイヤー画像
 	int player_img;
+
+	//プレイヤー(走行)画像
+	int player_run;
+
+	//プレイヤー(ジャンプ)画像
+	int player_jump;
+
+	int	 padInput;
+
+	bool isPadBtnPressed;			//PAD
+
 	//プレイヤーの表示座標
 	Vector2 playerPos;
 	//フレーム
 	int frame;
 	//ヒットポイント
 	int hp;
+
 	//歩きの画像
-	int walkImages[8];
+	int runImages[6];
+
+	//歩きの画像
+	//int walkImages[8];
+
 	//生存フラグ
 	bool aliveFlg;
+
 	//プレイヤーが向いている方向
 	int playerDir;
+
 	//アニメーションカウンター
 	int animCounter;
 };
