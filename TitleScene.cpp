@@ -25,8 +25,12 @@ TitleScene::~TitleScene(void)
 bool TitleScene::SystemInit(void)
 {
 	// ゲーム背景画像の読み込み
-	img = LoadGraph("image/Title.jpg");
+	img = LoadGraph("image/Title.png");
 	if (img == -1)return false;
+
+	// スタートボタン画像の読み込み
+	sb = LoadGraph("image/SelectBar_title.png");
+	if (sb == -1)return false;
 
 	// スタートボタン画像の読み込み
 	start = LoadGraph("image/Start.png");
@@ -35,6 +39,15 @@ bool TitleScene::SystemInit(void)
 	// スタートボタン画像の読み込み
 	start_after = LoadGraph("image/Start_after.png");
 	if (start_after == -1)return false;
+
+	// スタートボタン画像の読み込み
+	exit = LoadGraph("image/Exit.png");
+	if (exit == -1)return false;
+
+	// スタートボタン画像の読み込み
+	exit_after = LoadGraph("image/Exit_after.png");
+	if (exit_after == -1)return false;
+
 
 	bgm = LoadSoundMem("sound/Title.wav");
 	if (bgm == -1)return false;
@@ -49,8 +62,12 @@ void  TitleScene::GameInit(void)
 {
 	isTriggered = false;
 
+	idx = 0;
+
 	nextSceneID = E_SCENE_TITLE;
 
+	prevUpkey = nowUpkey = 0;
+	prevDownkey = nowDownkey = 0;
 	prevSpaceKey = nowSpaceKey = 0;
 
 	StopSoundMem(bgm);
@@ -61,28 +78,80 @@ void  TitleScene::GameInit(void)
 // 更新処理
 void  TitleScene::Update(void)
 {
-	prevSpaceKey = nowSpaceKey;
-	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
-
 	InputManager& inputIns = InputManager::GetInstance();
+
+	InputManager::JOYPAD_IN_STATE state =
+		inputIns.GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
 
 	padInput = GetJoypadInputState(DX_INPUT_PAD1);
 
 	isPadBtnPressed = (padInput & PAD_INPUT_1);
 
+	// 左アナログキーのX値
+	int analogKeyY = state.AKeyLY;
+
+	bool nowStickUp = (analogKeyY < -10000);
+	bool nowStickDown = (analogKeyY > 10000);
+
+	prevUpkey = nowUpkey;
+	nowUpkey = CheckHitKey(KEY_INPUT_UP);
+
+	prevDownkey = nowDownkey;
+	nowDownkey = CheckHitKey(KEY_INPUT_DOWN);
+
+	prevSpaceKey = nowSpaceKey;
+	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
+
+	static bool prevStickUp = false;
+	static bool prevStickDown = false;
+
+	bool stickUpReleased = (prevStickUp && !nowStickUp);
+	bool stickDownReleased = (prevStickDown && !nowStickDown);
+
+	prevStickUp = nowStickUp;		// 現在の位置保存
+	prevStickDown = nowStickDown;	// 現在の位置保存
+
+	// 上キーが離された瞬間
+	if (prevUpkey == 1 && nowUpkey == 0 || stickUpReleased)
+	{
+		idx--;
+		if (idx < 0)
+		{
+			idx = 1;
+		}
+	}
+
+	// アップトリガーでキーの押下を判定
+	if (prevDownkey == 1 && nowDownkey == 0 || stickDownReleased)
+	{
+		idx++;
+		if (idx > 1)
+		{
+			idx = 0;
+		}
+	}
+
 	if (prevSpaceKey == 0 && nowSpaceKey == 1 || isPadBtnPressed)
 	{
 		isTriggered = true;
 
+		StopSoundMem(bgm);
+
 		PlaySoundMem(slcse, DX_PLAYTYPE_BACK, false);
 	}
+
 
 	// アップトリガーでキーの押下を判定
 	if (prevSpaceKey == 1 && nowSpaceKey == 0 || isPadBtnPressed)
 	{
-		StopSoundMem(bgm);
-
-		nextSceneID = E_SCENE_SELECT;
+		if (idx == 0)
+		{
+			nextSceneID = E_SCENE_SELECT;	// SELECT画面へ
+		}
+		else
+		{
+			nextSceneID = E_SCENE_GAMEOVER;	// ゲーム終了
+		}
 	}
 }
 
@@ -93,16 +162,35 @@ void  TitleScene::Draw(void)
 	int dy = (Application::SCREEN_SIZE_HIG - TITLE_SIZE_HIG) / 2;
 	DrawGraph(dx, dy, img, true);
 
-	int sx = (Application::SCREEN_SIZE_WID - START_WID) / 2;
-	int sy = (Application::SCREEN_SIZE_HIG - START_HIG) / 2 + 100;
-	DrawGraph(sx, sy, start, true);
+	int ex = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
+	int ey = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 300;
+	DrawGraph(ex, ey, exit, true);
 
-	if (isTriggered) {
+	int sx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
+	int sy = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 50;
+	if (isTriggered)
+	{
 		DrawGraph(sx, sy, start_after, true);
 	}
-	else {
+	else
+	{
 		DrawGraph(sx, sy, start, true);
 	}
+
+	if (idx == 0)
+	{
+		int sbx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
+		int sby = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 50;
+		DrawGraph(sbx, sby, sb, true);
+	}
+	else
+	{
+		int sbx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
+		int sby = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 300;
+		DrawGraph(sbx, sby, sb, true);
+	}
+
+
 }
 
 // 解放処理(最後の一回のみ実行)
@@ -111,6 +199,19 @@ bool  TitleScene::Release(void)
 	if (DeleteGraph(img) == -1)return false;
 
 	if (DeleteGraph(start) == -1)return false;
+
+
+	if (DeleteGraph(start_after) == -1)return false;
+
+
+	if (DeleteGraph(exit) == -1)return false;
+
+
+	if (DeleteGraph(exit_after) == -1)return false;
+
+
+	if (DeleteGraph(sb) == -1)return false;
+
 
 	if (bgm != -1)
 	{

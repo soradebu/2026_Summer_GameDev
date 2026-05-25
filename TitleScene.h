@@ -8,8 +8,8 @@ public:
 	static constexpr int TITLE_SIZE_WID = 1920;		// タイトル画像の横サイズ
 	static constexpr int TITLE_SIZE_HIG = 1080;		// タイトル画像の縦サイズ
 
-	static constexpr int START_WID = 480;		// スタートボタン画像の横サイズ
-	static constexpr int START_HIG = 480;		// スタートボタン画像の縦サイズ
+	static constexpr int BUTTON_WID = 480;		// ボタン画像の横サイズ
+	static constexpr int BUTTON_HIG = 480;		// ボタン画像の縦サイズ
 
 	TitleScene(void);
 	~TitleScene(void);
@@ -26,6 +26,12 @@ private:
 	int img;					    // 背景画像のハンドル番号
 	int start;					    // スタートボタン画像のハンドル番号
 	int start_after;			    // スタートボタン画像のハンドル番号
+	int exit;					    // exit画像のハンドル番号
+	int exit_after;					// exit画像のハンドル番号
+
+	int sb;							// セレクトバー画像のハンドル番号
+
+	int idx;                        // 現在選択中のインデックス
 
 	int bgm;                        // BGMのハンドル番号
 	int slcse;                     // クリック効果音のハンドル番号
@@ -37,5 +43,8 @@ private:
 
 
 	E_SCENE_ID nextSceneID;		    // 次に遷移するシーンのID
+
+	int prevUpkey, nowUpkey;        // 上キー(↑)の状態を保存する変数
+	int prevDownkey, nowDownkey;    // 下キー(↓)の状態を保存する変数
 	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数
 };
