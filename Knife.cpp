@@ -21,6 +21,9 @@ bool Knife::SystemInit(void)
 	img = LoadGraph("image/knife.png");
 	if (img == -1)return false;
 
+	sound = LoadSoundMem("sound/Knife.mp3");
+	if (sound == -1)return false;
+
 	return true;
 
 }
@@ -88,4 +91,6 @@ void Knife::KnifeCreate(Vector2 bpos)
 	endAngle = DX_PI_F / 3.0f;
 
 	CutFlg = true; // 攻撃開始フラグON
+
+	PlaySoundMem(sound, DX_PLAYTYPE_BACK);
 }

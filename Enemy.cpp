@@ -25,8 +25,8 @@ bool Enemy::SystemInit(void)
 void Enemy::GameInit(void)
 {
 	Pos.x = 1700;
-	Pos.y = 600;
-	hp = 300;
+	Pos.y = 720;
+	hp = 20;
 	state = 0;
 	motionTimer = 0;
 	animCounter = 0;

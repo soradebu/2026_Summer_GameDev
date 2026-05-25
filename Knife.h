@@ -40,7 +40,7 @@ private:
 	Vector2 pos;
 	Vector2 vel;
 	bool CutFlg;
-
+	int sound;
 
 	float angle;        //現在の角度
 	float angleSpeed;   //1フレームに進む角度の速さ

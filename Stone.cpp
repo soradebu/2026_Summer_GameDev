@@ -6,7 +6,6 @@
 Stone::Stone(GameScene* gs)
 {
 	gInst = gs;
-	SystemInit();
 }
 
 Stone::~Stone(void)
@@ -36,6 +35,11 @@ void Stone::Update(void)
 {
 	if (!active)return;
 
+	if (speed.x > 0)
+	{
+		speed.y += 0.6f; 
+	}
+
 	//座標の更新
 	Pos.x += speed.x;
 	Pos.y += speed.y;
@@ -51,11 +55,8 @@ void Stone::Draw(void)
 {
 	if (!active)return;
 
+	Vector2 sPos = AsoUtility::Round(Pos);
 	DrawCircle(Pos.x,Pos.y,radius, GetColor(150, 150, 150), true);
-
-	//座標をint 型に変換する
-	Vector2 sPos;
-	sPos = AsoUtility::Round(Pos);
 
 }
 
@@ -76,7 +77,7 @@ void Stone::activate(float startX, float startY)
 
 void Stone::OnHit(void)
 {
-	speed.x = 7;
+	speed.x = 18;
 	speed.y = 0;
 
 	//剣が当たったらYへの移動量をゼロにして

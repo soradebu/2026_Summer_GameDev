@@ -21,7 +21,9 @@ public:
 
 	void activate(float startX, float startY);  //“G‚ª’n–Ê‚ğ‚½‚½‚¢‚½‚ÉŒÄ‚Ño‚·ŠÖ”
 	void OnHit(void);                           //Œ•‚ª“–‚½‚Á‚½‚ÉŒÄ‚Ño‚·ŠÖ”
+	
 
+	
 	Vector2 GetStonePos(void) const { return Pos; }
 	float GetStoneRadius(void) const { return radius; }
 	bool IsStoneActive(void) const { return active; }
