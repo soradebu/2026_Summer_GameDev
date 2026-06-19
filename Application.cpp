@@ -28,7 +28,7 @@ bool Application::SystemInit(void)
 
 	SetDrawScreen(DX_SCREEN_BACK);				// 描画する画面を裏の画面に設定する
 
-	SetWindowText("2516025 馬場　洸成");   // ゲームウィンドウのタイトル
+	SetWindowText("2516023 　林田　孝裕　");   // ゲームウィンドウのタイトル
 	// 乱数の初期化
 	SRand((unsigned int)time(NULL));
 
@@ -44,16 +44,30 @@ bool Application::SystemInit(void)
 // ゲーム起動
 void Application::Run(void)
 {
+
+	int startTime;
+
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
-		Update();			// 更新
-		Draw();				// 描画
+		startTime = GetNowCount(); // フレーム開始時間を取得
+
+		Update();            // 更新
+		Draw();              // 描画
+
+		// 60FPS固定のための待機処理
+		int elapsed = GetNowCount() - startTime;
+		if (elapsed < 16)
+		{
+			WaitTimer(16 - elapsed);
+		}
 	}
 }
 
 // 更新処理
 void Application::Update(void)
 {
+
+
 	sceneMana->Update();
 }
 
@@ -62,7 +76,7 @@ void Application::Draw(void)
 {
 	ClearDrawScreen();							// 描画する画面の内容を消去(クリア)する
 
-	sceneMana->Draw();
+	sceneMana->Draw();	
 
 	ScreenFlip();								// 裏画面と表画面を入れ替える
 }

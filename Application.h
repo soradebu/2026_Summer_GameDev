@@ -14,7 +14,6 @@ public:
 	bool SystemInit(void);                         // 初期化処理(最初の1回のみ実行)
 	void Run(void);                                // ゲーム起動
 	bool Release(void);                            // 解放処理(最初の1回のみ実行)
-
 private:
 	SceneManager* sceneMana;                       // シーンマネージャーのインスタンスのポインタ
 

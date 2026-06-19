@@ -22,8 +22,6 @@ public:
 	void activate(float startX, float startY);  //敵が地面をたたいた時に呼び出す関数
 	void OnHit(void);                           //剣が当たった時に呼び出す関数
 	
-
-	
 	Vector2 GetStonePos(void) const { return Pos; }
 	float GetStoneRadius(void) const { return radius; }
 	bool IsStoneActive(void) const { return active; }
@@ -32,6 +30,7 @@ private:
 	GameScene* gInst;      //ゲームシーンクラスのインスタンスのポインタ
 	Vector2 Pos;           //石の座標
 	Vector2 speed;         //石の移動速度
+	int img;               //石の画像
 
 	float radius;          //当たり判定の半径
 	bool active;           //出現中フラグ

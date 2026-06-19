@@ -5,6 +5,7 @@
 #include "GameScene.h"
 #include "Fader.h"
 #include "GameOverScene.h"
+#include"GameClearScene.h"
 
 // コンストラクタ
 SceneManager::SceneManager(void)
@@ -14,6 +15,7 @@ SceneManager::SceneManager(void)
 	gameInst = nullptr;
 	fader = nullptr;
 	gameover = nullptr;
+	gameclear = nullptr;
 
 	scene_ID = waitScene = E_SCENE_NON;
 }
@@ -85,6 +87,10 @@ void SceneManager::Update(void)
 			gameover->Update();
 			nextSceneId = gameover->GetNextSceneID();
 			break;
+		case E_SCENE_GAMECLEAR:
+			gameclear->Update();
+			nextSceneId = gameclear->GetNextSceneID();
+			break;
 		}
 
 		if (scene_ID != nextSceneId)
@@ -113,6 +119,9 @@ void SceneManager::Draw(void)
 	case E_SCENE_GAMEOVER:
 		gameover->Draw();
 		break;
+	case E_SCENE_GAMECLEAR:
+		gameclear->Draw();
+		break;
 	}
 
 	fader->Draw();
@@ -126,6 +135,7 @@ bool SceneManager::Release(void)
 	ReleaseScene(E_SCENE_SELECT);
 	ReleaseScene(E_SCENE_GAME);
 	ReleaseScene(E_SCENE_GAMEOVER);
+	ReleaseScene(E_SCENE_GAMECLEAR);
 
 	fader->Release();
 	delete fader;
@@ -180,6 +190,15 @@ bool SceneManager::ChangeScene(E_SCENE_ID id)
 			gameover->GameInit();
 		}
 		break;
+	case E_SCENE_GAMECLEAR:
+		if (gameclear == nullptr)
+		{
+			gameclear = new GameClearScene();
+			if (gameclear == nullptr)return false;
+			gameclear->SystemInit();
+			gameclear->GameInit();
+		}
+		break;
 	}
 	return true;
 }
@@ -217,6 +236,13 @@ void SceneManager::ReleaseScene(E_SCENE_ID id)
 			gameover->Release();
 			delete gameover;
 			gameover = nullptr;
+		}
+	case E_SCENE_GAMECLEAR:
+		if (gameclear != nullptr)
+		{
+			gameclear->Release();
+			delete gameclear;
+			gameclear = nullptr;
 		}
 		break;
 	}

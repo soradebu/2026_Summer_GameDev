@@ -1,0 +1,10 @@
+diff a/Enemy.h b/Enemy.h	(rejected hunks)
+@@ -25,8 +25,6 @@
+ 
+ 	// �G�̐�����Ԃ�擾����
+ 	virtual bool GetAlive(void) { return aliveFlg; }
+-	//�G�̏ꏊ��擾����
+-	Vector2 GetPlayerPos(void) { return Pos; }
+ 	//�G�̐�����Ԃ�ݒ肷��
+ 	virtual void SetAlive(bool bflg) { aliveFlg = bflg; }
+ 

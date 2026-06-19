@@ -7,12 +7,9 @@ class SelectScene
 public:
 	static constexpr int SELECT_WID = 1920;		      // select画像の横サイズ
 	static constexpr int SELECT_HIG = 1080;		      // select画像の縦サイズ
-	 
-	static constexpr int SELECT_BAR_WID = 768;		  // ステージ選択バーの横サイズ
-	static constexpr int SELECT_BAR_HID = 432;		  // ステージ選択バーの横サイズ
 
 	static constexpr int SELECT_BUTTON_WID = 768;	  // ステージ選択画像の横サイズ
-	static constexpr int SELECT_BUTTON_HIG = 432 ;	  // ステージ選択画像の縦サイズ
+	static constexpr int SELECT_BUTTON_HIG = 432;	  // ステージ選択画像の縦サイズ
 
 	SelectScene(void);
 	~SelectScene(void);
@@ -37,9 +34,13 @@ private:
 	int slc2_after;					// ステージ選択後ボタン2のハンドル番号
 	int slc3_after;				    // ステージ選択後ボタン3のハンドル番号
 
-	int slcse;                     // クリック効果音のハンドル番号
+	int slcse;						// クリック効果音のハンドル番号
 
 	int idx;                        // 現在選択中のインデックス
+
+
+	int	 padInput;
+	bool isPadBtnPressed;			//PAD
 
 	bool isTriggered;
 

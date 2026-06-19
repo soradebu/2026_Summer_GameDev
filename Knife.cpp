@@ -69,7 +69,10 @@ void Knife::Draw(void)
 {
 	if (CutFlg == true)
 	{
-		DrawGraph(pos.x, pos.y, img, true);
+		int cx = 48;
+		int cy = 16;
+
+		DrawRotaGraph2(pos.x, pos.y, cx, cy, 1.0f, imageRotation, img, true);
 	}
 
 }
@@ -85,7 +88,7 @@ bool Knife::Release(void)
 void Knife::KnifeCreate(Vector2 bpos)
 {
 	// 始点の角度：右斜め上（-60度）
-	angle = -DX_PI_F / 2.5f;
+	angle = -DX_PI_F / 8.0f;
 
 	// 終点の角度：右斜め下（ 120度）
 	endAngle = DX_PI_F / 3.0f;

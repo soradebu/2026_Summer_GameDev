@@ -11,8 +11,8 @@ class Knife
 
 public:
 
-	static constexpr int SIZE_WID = 92;
-	static constexpr int SIZE_HIG = 100;
+	static constexpr int SIZE_WID = 64;
+	static constexpr int SIZE_HIG = 64;
 	static constexpr int DAMAGE = 2;
 
 	Knife(GameScene* gs);

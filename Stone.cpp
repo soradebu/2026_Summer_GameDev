@@ -15,7 +15,8 @@ Stone::~Stone(void)
 
 bool Stone::SystemInit(void)
 {
-
+	img = LoadGraph("image/stone.png");
+	if (img == -1)return false;
 
 	return true;
 }
@@ -37,7 +38,7 @@ void Stone::Update(void)
 
 	if (speed.x > 0)
 	{
-		speed.y += 0.6f; 
+		speed.y += 0.7f ; 
 	}
 
 	//À•W‚ÌXV
@@ -56,7 +57,7 @@ void Stone::Draw(void)
 	if (!active)return;
 
 	Vector2 sPos = AsoUtility::Round(Pos);
-	DrawCircle(Pos.x,Pos.y,radius, GetColor(150, 150, 150), true);
+	DrawGraph(Pos.x,Pos.y,img, true);
 
 }
 
@@ -71,13 +72,13 @@ void Stone::activate(float startX, float startY)
 	Pos.x = startX;
 	Pos.y = startY;
 	speed.x = 0;
-	speed.y = 7;
+	speed.y = 22;
 	active = true;
 }
 
 void Stone::OnHit(void)
 {
-	speed.x = 18;
+	speed.x = 25  ;
 	speed.y = 0;
 
 	//Œ•‚ª“–‚½‚Á‚½‚çY‚Ö‚ÌˆÚ“®—Ê‚ğƒ[ƒ‚É‚µ‚Ä

@@ -6,6 +6,7 @@
 
 class GameScene;
 
+
 class Enemy
 {
 
@@ -29,11 +30,15 @@ public:
 	Vector2 GetEnemyPos(void) { return Pos; }
 	bool GetEnemyAlive(void) { return aliveFlg; }
 	void SetEnemyAliveOff(void) { aliveFlg = false; }
+	float GetEnemyRadius(void);
 
 	// メイン側から、敵が地面を叩いたかどうかを確認するための関数
 	bool CheckAndResetPoundFlag();
 
+	bool CheckAndResetFireFlag(void);
+	bool CheckResetStoneFlag();
 
+	int GetHP(void) { return hp; }
 	void SetDamage(int dp);
 
 private:
@@ -41,7 +46,7 @@ private:
 	GameScene* gInst;
 
 	//敵画像
-	int img[8];
+	int img[12];
 	//今描画する画像番号
 	int currentImg;
 	//待機アニメーション用タイマー
@@ -59,6 +64,10 @@ private:
 
 	int state;           // 敵の状態（0: 通常、1: 叩きモーション中）
 	int motionTimer;     // モーションの時間を計るタイマー
-	bool isGroundPounded;// 地面を叩いた瞬間だけTRUEになるフラグ
+	bool isLeft;
 
+	bool isGroundPounded;// 地面を叩いた瞬間だけTRUEになるフラグ
+	bool isFireBreathing;  //火を噴いているか
+	bool isStoneRaining;   //石を振らせているか
+	int attack;            //攻撃パターンの抽選養
 };
