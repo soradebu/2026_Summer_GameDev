@@ -31,7 +31,7 @@ Stage2::~Stage2(void)
 }
 
 //‰Šú‰»ˆ—(Å‰‚Ìˆê‰ñ‚Ì‚İÀs)
-bool Stage2::Stage2(void)
+bool Stage2::SystemInit(void)
 {
 	player = new Player(this);
 	if (player == nullptr)return false;
@@ -68,7 +68,7 @@ bool Stage2::Stage2(void)
 	}
 
 	// ƒQ[ƒ€”wŒi‰æ‘œ‚Ì“Ç‚İ‚İ
-	img = LoadGraph("image/mori1.jpg");
+	img = LoadGraph("image/stage1.jpg");
 	if (img == -1)return false;
 
 	effectImg = LoadGraph("image/effect.png");
@@ -132,7 +132,7 @@ void Stage2::GameInit(void)
 
 	sState = SceneState::PLAYING; // Å‰‚Í•’Ê‚É—V‚×‚éó‘Ô
 
-	nextSceneID = E_SCENE_GAME;
+	nextSceneID = E_SCENE_STAGE2;
 
 	StopSoundMem(bgm);
 

@@ -1,10 +1,13 @@
 #include <DxLib.h>
 #include "GameOverScene.h"
 #include "Application.h"
+#include "InputManager.h"
 
 GameOverScene::GameOverScene(void)
 {
 	goImage = -1;
+
+	bgm = -1;
 }
 
 GameOverScene::~GameOverScene(void)
@@ -19,12 +22,21 @@ bool GameOverScene::SystemInit(void)
 	goImage = LoadGraph("image/Gameover.png");
 	if (goImage == -1)return false;
 
+	bgm = LoadSoundMem("sound/GameOver.mp3");
+	if (bgm == -1)return false;
+
 	return true;
+	
 }
+
 // ゲーム起動・再開時に必ず呼び出す処理
 void  GameOverScene::GameInit(void)
 {
 	nextSceneID = E_SCENE_GAMEOVER;
+
+	StopSoundMem(bgm);
+
+	PlaySoundMem(bgm, DX_PLAYTYPE_BACK, true);
 
 	//prevSpaceKey = nowSpaceKey = 0;
 }
@@ -32,12 +44,22 @@ void  GameOverScene::GameInit(void)
 // 更新処理
 void  GameOverScene::Update(void)
 {
+	InputManager& inputIns = InputManager::GetInstance();
+
+	InputManager::JOYPAD_IN_STATE state =
+		inputIns.GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
+
+	padInput = GetJoypadInputState(DX_INPUT_PAD1);
+
+	isPadBtnPressed = (padInput & PAD_INPUT_1);
+
 	prevSpaceKey = nowSpaceKey;
 	nowSpaceKey = CheckHitKey(KEY_INPUT_SPACE);
 
 	// アップトリガーでキーの押下を判定
-	if (prevSpaceKey == 1 && nowSpaceKey == 0)
+	if (prevSpaceKey == 1 && nowSpaceKey == 0 || isPadBtnPressed)
 	{
+		StopSoundMem(bgm);
 		nextSceneID = E_SCENE_TITLE;
 	}
 }
@@ -55,6 +77,11 @@ void  GameOverScene::Draw(void)
 bool  GameOverScene::Release(void)
 {
 	if (DeleteGraph(goImage) == -1)return false;
+
+	if (bgm != -1)
+	{
+		if (DeleteSoundMem(bgm) == -1) return false;
+	}
 
 	return true;
 }

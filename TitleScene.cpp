@@ -29,8 +29,8 @@ bool TitleScene::SystemInit(void)
 	if (img == -1)return false;
 
 	// スタートボタン画像の読み込み
-	sb = LoadGraph("image/SelectBar_title.png");
-	if (sb == -1)return false;
+	pl = LoadGraph("image/play.png");
+	if (pl == -1)return false;
 
 	// スタートボタン画像の読み込み
 	start = LoadGraph("image/Start.png");
@@ -45,9 +45,8 @@ bool TitleScene::SystemInit(void)
 	if (exit == -1)return false;
 
 	// スタートボタン画像の読み込み
-	exit_after = LoadGraph("image/Exit_after.png");
+	exit_after = LoadGraph("image/exit_after.png");
 	if (exit_after == -1)return false;
-
 
 	bgm = LoadSoundMem("sound/Title.wav");
 	if (bgm == -1)return false;
@@ -57,6 +56,7 @@ bool TitleScene::SystemInit(void)
 
 	return true;
 }
+
 // ゲーム起動・再開時に必ず呼び出す処理
 void  TitleScene::GameInit(void)
 {
@@ -90,8 +90,8 @@ void  TitleScene::Update(void)
 	// 左アナログキーのX値
 	int analogKeyY = state.AKeyLY;
 
-	bool nowStickUp = (analogKeyY < -10000);
-	bool nowStickDown = (analogKeyY > 10000);
+	bool nowStickUp = (analogKeyY < 0);
+	bool nowStickDown = (analogKeyY > 0);
 
 	prevUpkey = nowUpkey;
 	nowUpkey = CheckHitKey(KEY_INPUT_UP);
@@ -121,7 +121,7 @@ void  TitleScene::Update(void)
 		}
 	}
 
-	// アップトリガーでキーの押下を判定
+	// 下キーが離された瞬間
 	if (prevDownkey == 1 && nowDownkey == 0 || stickDownReleased)
 	{
 		idx++;
@@ -150,7 +150,11 @@ void  TitleScene::Update(void)
 		}
 		else
 		{
-			nextSceneID = E_SCENE_GAMEOVER;	// ゲーム終了
+			Release();
+
+			DxLib_End();
+
+			::exit(0);// ゲーム終了
 		}
 	}
 }
@@ -163,34 +167,35 @@ void  TitleScene::Draw(void)
 	DrawGraph(dx, dy, img, true);
 
 	int ex = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
-	int ey = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 300;
+	int ey = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 350;
 	DrawGraph(ex, ey, exit, true);
 
 	int sx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
 	int sy = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 50;
-	if (isTriggered)
-	{
-		DrawGraph(sx, sy, start_after, true);
-	}
-	else
-	{
-		DrawGraph(sx, sy, start, true);
-	}
+	DrawGraph(sx, sy, start, true);
 
 	if (idx == 0)
 	{
-		int sbx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 50;
-		DrawGraph(sbx, sby, sb, true);
+		int sbx = (Application::SCREEN_SIZE_WID - PLAY_WID) / 2 - 300;
+		int sby = (Application::SCREEN_SIZE_HIG - PLAY_HIG) / 2 + 50;
+		DrawGraph(sbx, sby, pl, true);
+
+		if (isTriggered)
+		{
+			DrawGraph(sx, sy, start_after, true);
+		}
 	}
 	else
 	{
-		int sbx = (Application::SCREEN_SIZE_WID - BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - BUTTON_HIG) / 2 + 300;
-		DrawGraph(sbx, sby, sb, true);
+		int sbx = (Application::SCREEN_SIZE_WID - PLAY_WID) / 2 - 300;
+		int sby = (Application::SCREEN_SIZE_HIG - PLAY_HIG) / 2 + 350;
+		DrawGraph(sbx, sby, pl, true);
+
+		if (isTriggered)
+		{
+			DrawGraph(ex, ey, exit_after, true);
+		}
 	}
-
-
 }
 
 // 解放処理(最後の一回のみ実行)
@@ -210,7 +215,7 @@ bool  TitleScene::Release(void)
 	if (DeleteGraph(exit_after) == -1)return false;
 
 
-	if (DeleteGraph(sb) == -1)return false;
+	if (DeleteGraph(pl) == -1)return false;
 
 
 	if (bgm != -1)

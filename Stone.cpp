@@ -1,0 +1,83 @@
+#include<DxLib.h>
+#include "Stone.h"
+#include"AsoUtility.h"
+#include "Application.h"
+
+Stone::Stone(SceneBase* scene)
+{
+	m_pScene = scene;
+}
+
+Stone::~Stone(void)
+{
+
+}
+
+bool Stone::SystemInit(void)
+{
+	img = LoadGraph("image/stone.png");
+	if (img == -1)return false;
+
+	return true;
+}
+
+void Stone::GameInit(void)
+{
+	Pos.x = 0;
+	Pos.y = 0;
+	speed.x = 0;
+	speed.y = 0;
+	radius = 20.0f; // 当たり判定の半径
+	active = false;
+
+}
+
+void Stone::Update(void)
+{
+	if (!active)return;
+
+	if (speed.x > 0)
+	{
+		speed.y += 0.3f ; 
+	}
+
+	//座標の更新
+	Pos.x += speed.x;
+	Pos.y += speed.y;
+
+	//画面外に出たら石を消去する
+	if (Pos.y > 1080 || Pos.x > 1920) {
+		active = false;
+	}
+
+}
+
+void Stone::Draw(void)
+{
+	if (!active)return;
+
+	Vector2 sPos = AsoUtility::Round(Pos);
+	DrawGraph(Pos.x,Pos.y,img, true);
+
+}
+
+bool Stone::Release(void)
+{
+	return true;
+}
+
+//敵が地面をたたいた時に呼び出す関数
+void Stone::activate(float startX, float startY)
+{
+	Pos.x = startX;
+	Pos.y = startY;
+	speed.x = 0;
+	speed.y = 18;
+	active = true;
+}
+
+void Stone::OnHit(void)
+{
+	speed.x = 18;
+	speed.y = 0;
+}

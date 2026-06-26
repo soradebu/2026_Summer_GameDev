@@ -20,6 +20,6 @@ public:
 	virtual void Draw(void);
 
 	// ‰ğ•úˆ—
-	virtual void Release(void);
+	virtual bool Release(void);
 
 };

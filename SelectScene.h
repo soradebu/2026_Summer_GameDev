@@ -24,6 +24,7 @@ public:
 
 private:
 	int img;					    // 背景画像のハンドル番号
+	int img2;
 
 	int sb;							// セレクトバー画像のハンドル番号
 	int slc1;						// ステージ選択ボタン1のハンドル番号

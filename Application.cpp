@@ -44,10 +44,26 @@ bool Application::SystemInit(void)
 // ゲーム起動
 void Application::Run(void)
 {
-	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
+
+
+
+	int startTime;
+
+
+
+	while (ProcessMessage() == 0)
 	{
-		Update();			// 更新
-		Draw();				// 描画
+		startTime = GetNowCount(); // フレーム開始時間を取得
+
+		Update();		// 更新
+		Draw();			// 描画
+
+		// 60FPS固定\のための待機処理
+		int elapsed = GetNowCount() - startTime;
+		if (elapsed < 16)
+		{
+			WaitTimer(16 - elapsed);
+		}
 	}
 }
 

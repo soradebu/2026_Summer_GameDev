@@ -1,25 +1,37 @@
-#include"Vector2.h"
-#include"AsoUtility.h"
-#include"GameScene.h"
-#include<DxLib.h>
+#include <DxLib.h>
+#include "Vector2.h"
+#include "AsoUtility.h"
+
+class SceneBase;
 
 class Player
 {
 public:
-	static constexpr int PLAYER_WID = 96;   //プレイヤーの横サイズ
-	static constexpr int PLAYER_HIG = 128;   //プレイヤーの縦サイズ
+
+	enum class state
+	{
+		IDLE,   // 待機
+		RUN,	// 走行
+		JUMP,   // ジャンプ
+		STONE,  // 岩ダメージ
+		FIRE,   // 炎ダメージ
+		MAX
+	};
+
+	static constexpr int PLAYER_WID = 100;   //プレイヤーの横サイズ
+	static constexpr int PLAYER_HIG = 100;   //プレイヤーの縦サイズ
 
 	static constexpr int ANIM_NUMS = 4;     //方向毎のアニメーション数
 	static constexpr int CHARA_MAX = ANIM_NUMS * static_cast<int>(AsoUtility::DIR::MAX);
 
-	static constexpr int MOVE_SPEED = 8;    //一回の移動量
+	static constexpr int MOVE_SPEED = 12;    //一回の移動量
 	static constexpr int ANIM_INTERVAL = 10;  //アニメーションの更新間隔
 
-	static constexpr int  PLAYER_HP_MAX = 100;   //プレイヤーのHPの最大値
+	static constexpr int  PLAYER_HP_MAX = 160;   //プレイヤーのHPの最大値
 
 	static constexpr float scale = 10.0f;    //10倍のサイズに変更する
 
-	Player(GameScene* gs);
+	Player(SceneBase* scene);
 	~Player(void);
 
 	bool SystemInit(void);         //初期化処理(最初の一回のみ実行)
@@ -31,21 +43,22 @@ public:
 	//ゲッター関数
 	Vector2 GetPlayerPos(void) { return playerPos; }
 	void SetPlayerPos(Vector2 mPos) { playerPos = mPos; }
+	int GetPlayerDir(void) { return playerDir; }
 
-	int GetHp(void) { return hp; }               //HPの取得
+	int GetHP(void) { return hp; }
+	void DecreaseHP(void) { if (hp > 0) hp--; }
 	bool GetAlive(void) { return aliveFlg; }     //生存状態の取得
-	void SetDamage(int dp);
+	void SetDamage(int dp, state damageState);
+	int GetDamageTimer(void) { return damageTimer; }
+
+
+	void SetInvincible(float time) { invincibleTime = time; }
+	float GetInvincibleTime(void) { return invincibleTime; }
+
+	bool GetIsJumping(void) const { return isJumping; }
 
 private:
-	GameScene* gInst;
-
-	enum class state
-	{
-		IDLE,   // 待機
-		RUN,	// 走行
-		JUMP,   // ジャンプ
-		MAX
-	};
+	SceneBase* m_pScene;
 
 	// ジャンプの初期速度
 	float jumpSpeed;
@@ -58,7 +71,7 @@ private:
 
 	state currentstate;
 
-	static const int MAX_ANIMS = 8;
+	static const int MAX_ANIMS = 6;
 	int playerImages[static_cast<int>(state::MAX)][MAX_ANIMS];
 
 	//プレイヤー画像
@@ -80,6 +93,8 @@ private:
 	int frame;
 	//ヒットポイント
 	int hp;
+	//サウンド
+	int sound;
 
 	//歩きの画像
 	int runImages[6];
@@ -92,4 +107,12 @@ private:
 
 	//アニメーションカウンター
 	int animCounter;
+
+	int player_hit_stone;
+
+	int player_hit_fire;
+
+	int damageTimer;
+
+	float invincibleTime = 0.0f;
 };

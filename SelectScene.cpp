@@ -7,11 +7,19 @@ SelectScene::SelectScene(void)
 {
 	img = -1;
 
+	img2 = -1;
+
 	sb = -1;
 
 	slc1 = -1;
 	slc2 = -1;
 	slc3 = -1;
+
+	slc1_after = -1;
+	slc2_after = -1;
+	slc3_after = -1;
+
+	slcse = -1;
 
 }
 
@@ -92,8 +100,8 @@ void SelectScene::Update(void)
 	// 左アナログキーのX値
 	int analogKeyY = state.AKeyLY;
 
-	bool nowStickUp = (analogKeyY < -10000);
-	bool nowStickDown = (analogKeyY > 10000);
+	bool nowStickUp = (analogKeyY < 0);
+	bool nowStickDown = (analogKeyY > 0);
 
 	prevUpkey = nowUpkey;
 	nowUpkey = CheckHitKey(KEY_INPUT_UP);
@@ -123,7 +131,7 @@ void SelectScene::Update(void)
 		}
 	}
 
-	// アップトリガーでキーの押下を判定
+	// 下キーが離された瞬間
 	if (prevDownkey == 1 && nowDownkey == 0 || stickDownReleased)
 	{
 		idx++;
@@ -146,15 +154,15 @@ void SelectScene::Update(void)
 	{
 		if (idx == 0)
 		{
-			nextSceneID = E_SCENE_GAME; // STAGE 1へ
+			nextSceneID = E_SCENE_STAGE1;		// STAGE 1へ
 		}
 		else if (idx == 1)
 		{
-			nextSceneID = E_SCENE_GAMEOVER; // STAGE 2へ
+			nextSceneID = E_SCENE_STAGE2;		// STAGE 2へ
 		}
 		else
 		{
-			nextSceneID = E_SCENE_TITLE;    // STAGE 3へ
+			nextSceneID = E_SCENE_STAGE3;       // STAGE 3へ
 		}
 	}
 }
@@ -167,62 +175,45 @@ void SelectScene::Draw(void)
 	int dy = (Application::SCREEN_SIZE_HIG - SELECT_HIG) / 2;
 	DrawGraph(dx, dy, img, true);
 
-	int sx1 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-	int sy1 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 - 300;
+	int sx = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
+	int sy[3] =
+	{
+		(Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 - 300,
+		(Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2,
+		(Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 + 300
+	};
 
-
-	int sx2 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-	int sy2 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2;
-
-
-	int sx3 = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-	int sy3 = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 + 300;
+	DrawGraph(sx, sy[0], slc1, true);
+	DrawGraph(sx, sy[1], slc2, true);
+	DrawGraph(sx, sy[2], slc3, true);
 
 	if (isTriggered)
 	{
 		if (idx == 0)
 		{
-			DrawGraph(sx1, sy1, slc1_after, true);
-			DrawGraph(sx2, sy2, slc2, true);
-			DrawGraph(sx3, sy3, slc3, true);
+			DrawGraph(sx, sy[0], slc1_after, true);
 		}
 		else if (idx == 1)
 		{
-			DrawGraph(sx2, sy2, slc2_after, true);
-			DrawGraph(sx1, sy1, slc1, true);
-			DrawGraph(sx3, sy3, slc3, true);
+			DrawGraph(sx, sy[1], slc2_after, true);
 		}
 		else
 		{
-			DrawGraph(sx3, sy3, slc3_after, true);
-			DrawGraph(sx1, sy1, slc1, true);
-			DrawGraph(sx2, sy2, slc2, true);
+			DrawGraph(sx, sy[2], slc3_after, true);
 		}
-	}
-	else
-	{
-		DrawGraph(sx1, sy1, slc1, true);
-		DrawGraph(sx2, sy2, slc2, true);
-		DrawGraph(sx3, sy3, slc3, true);
 	}
 
 	if (idx == 0)
 	{
-		int sbx = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 - 300;
-		DrawGraph(sbx, sby, sb, true);
+		DrawGraph(sx, sy[0], sb, true);
 	}
 	else if (idx == 1)
 	{
-		int sbx = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2;
-		DrawGraph(sbx, sby, sb, true);
+		DrawGraph(sx, sy[1], sb, true);
 	}
 	else
 	{
-		int sbx = (Application::SCREEN_SIZE_WID - SELECT_BUTTON_WID) / 2;
-		int sby = (Application::SCREEN_SIZE_HIG - SELECT_BUTTON_HIG) / 2 + 300;
-		DrawGraph(sbx, sby, sb, true);
+		DrawGraph(sx, sy[2], sb, true);
 	}
 
 

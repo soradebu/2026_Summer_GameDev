@@ -3,17 +3,23 @@
 #include "TitleScene.h"
 #include "SelectScene.h"
 #include "GameScene.h"
+#include "Stage2.h"
+#include "Stage3.h"
 #include "Fader.h"
 #include "GameOverScene.h"
+#include"GameClearScene.h"
 
 // コンストラクタ
 SceneManager::SceneManager(void)
 {
 	titleInst = nullptr;
 	selectInst = nullptr;
-	gameInst = nullptr;
+	stage1 = nullptr;
+	stage2 = nullptr;
+	stage3 = nullptr;
 	fader = nullptr;
 	gameover = nullptr;
+	gameclear = nullptr;
 
 	scene_ID = waitScene = E_SCENE_NON;
 }
@@ -77,13 +83,25 @@ void SceneManager::Update(void)
 			selectInst->Update();
 			nextSceneId = selectInst->GetNextSceneID();
 			break;
-		case E_SCENE_GAME:
-			gameInst->Update();
-			nextSceneId = gameInst->GetNextSceneID();
+		case E_SCENE_STAGE1:
+			stage1->Update();
+			nextSceneId = stage1->GetNextSceneID();
+			break;
+		case E_SCENE_STAGE2:
+			stage2->Update();
+			nextSceneId = stage2->GetNextSceneID();
+			break;
+		case E_SCENE_STAGE3:
+			stage3->Update();
+			nextSceneId = stage3->GetNextSceneID();
 			break;
 		case E_SCENE_GAMEOVER:
 			gameover->Update();
 			nextSceneId = gameover->GetNextSceneID();
+			break;
+		case E_SCENE_GAMECLEAR:
+			gameclear->Update();
+			nextSceneId = gameclear->GetNextSceneID();
 			break;
 		}
 
@@ -107,13 +125,23 @@ void SceneManager::Draw(void)
 	case E_SCENE_SELECT:
 		selectInst->Draw();
 		break;
-	case E_SCENE_GAME:
-		gameInst->Draw();
+	case E_SCENE_STAGE1:
+		stage1->Draw();
+		break;
+	case E_SCENE_STAGE2:
+		stage2->Draw();
+		break;
+	case E_SCENE_STAGE3:
+		stage3->Draw();
 		break;
 	case E_SCENE_GAMEOVER:
 		gameover->Draw();
 		break;
+	case E_SCENE_GAMECLEAR:
+		gameclear->Draw();
+		break;
 	}
+
 	fader->Draw();
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "Current Scene: %d", scene_ID);
 }
@@ -123,8 +151,11 @@ bool SceneManager::Release(void)
 {
 	ReleaseScene(E_SCENE_TITLE);
 	ReleaseScene(E_SCENE_SELECT);
-	ReleaseScene(E_SCENE_GAME);
+	ReleaseScene(E_SCENE_STAGE1);
+	ReleaseScene(E_SCENE_STAGE2);
+	ReleaseScene(E_SCENE_STAGE3);
 	ReleaseScene(E_SCENE_GAMEOVER);
+	ReleaseScene(E_SCENE_GAMECLEAR);
 
 	fader->Release();
 	delete fader;
@@ -161,13 +192,31 @@ bool SceneManager::ChangeScene(E_SCENE_ID id)
 			selectInst->GameInit();
 		}
 		break;
-	case E_SCENE_GAME:
-		if (gameInst == nullptr)
+	case E_SCENE_STAGE1:
+		if (stage1 == nullptr)
 		{
-			gameInst = new GameScene();
-			if (gameInst == nullptr)return false;
-			gameInst->SystemInit();
-			gameInst->GameInit();
+			stage1 = new GameScene();
+			if (stage1 == nullptr)return false;
+			stage1->SystemInit();
+			stage1->GameInit();
+		}
+		break;
+	case E_SCENE_STAGE2:
+		if (stage2 == nullptr)
+		{
+			stage2 = new Stage2();
+			if (stage2 == nullptr)return false;
+			stage2->SystemInit();
+			stage2->GameInit();
+		}
+		break;
+	case E_SCENE_STAGE3:
+		if (stage3 == nullptr)
+		{
+			stage3 = new Stage3();
+			if (stage3 == nullptr)return false;
+			stage3->SystemInit();
+			stage3->GameInit();
 		}
 		break;
 	case E_SCENE_GAMEOVER:
@@ -177,6 +226,15 @@ bool SceneManager::ChangeScene(E_SCENE_ID id)
 			if (gameover == nullptr)return false;
 			gameover->SystemInit();
 			gameover->GameInit();
+		}
+		break;
+	case E_SCENE_GAMECLEAR:
+		if (gameclear == nullptr)
+		{
+			gameclear = new GameClearScene();
+			if (gameclear == nullptr)return false;
+			gameclear->SystemInit();
+			gameclear->GameInit();
 		}
 		break;
 	}
@@ -202,12 +260,28 @@ void SceneManager::ReleaseScene(E_SCENE_ID id)
 			selectInst = nullptr;
 		}
 		break;
-	case E_SCENE_GAME:
-		if (gameInst != nullptr)
+	case E_SCENE_STAGE1:
+		if (stage1 != nullptr)
 		{
-			gameInst->Release();
-			delete gameInst;
-			gameInst = nullptr;
+			stage1->Release();
+			delete stage1;
+			stage1 = nullptr;
+		}
+		break;
+	case E_SCENE_STAGE2:
+		if (stage2 != nullptr)
+		{
+			stage2->Release();
+			delete stage2;
+			stage2 = nullptr;
+		}
+		break;
+	case E_SCENE_STAGE3:
+		if (stage3 != nullptr)
+		{
+			stage3->Release();
+			delete stage3;
+			stage3 = nullptr;
 		}
 		break;
 	case E_SCENE_GAMEOVER:
@@ -216,6 +290,13 @@ void SceneManager::ReleaseScene(E_SCENE_ID id)
 			gameover->Release();
 			delete gameover;
 			gameover = nullptr;
+		}
+	case E_SCENE_GAMECLEAR:
+		if (gameclear != nullptr)
+		{
+			gameclear->Release();
+			delete gameclear;
+			gameclear = nullptr;
 		}
 		break;
 	}

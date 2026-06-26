@@ -8,10 +8,9 @@
 #include "Enemy.h"
 #include "Player.h"
 
-Player::Player(GameScene* gs)
+Player::Player(SceneBase* scene)
 {
-	gInst = gs;
-
+	m_pScene = scene;
 }
 
 Player::~Player(void)
@@ -27,8 +26,19 @@ bool Player::SystemInit(void)
 	player_run = LoadGraph("image/Run.png");
 	if (player_run == -1) return false;
 
+	sound = LoadSoundMem("sound/jump.wav");
+	if (sound == -1)return false;
+
 	player_jump = LoadGraph("image/Jump.png");
 	if (player_jump == -1) return false;
+
+	// 岩ダメージ画像の読み込み
+	player_hit_stone = LoadGraph("image/Damage_A.png");
+	if (player_hit_stone == -1) return false;
+
+	// 火ダメージ画像の読み込み
+	player_hit_fire = LoadGraph("image/Damage_B.png");
+	if (player_hit_fire == -1) return false;
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -40,14 +50,33 @@ bool Player::SystemInit(void)
 
 		// ジャンプアニメーション
 		playerImages[static_cast<int>(state::JUMP)][i] = DerivationGraph(i * 100, 0, 100, 100, player_jump);
+
+		// 岩ダメージアニメーション
+		playerImages[static_cast<int>(state::STONE)][i] = DerivationGraph(i * 100, 0, 100, 100, player_hit_stone);
+
+		// ダメージアニメーション
+		playerImages[static_cast<int>(state::FIRE)][i] = DerivationGraph(i * 100, 0, 100, 100, player_hit_fire);
 	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		// 岩ダメージアニメーション
+		playerImages[static_cast<int>(state::STONE)][i] = DerivationGraph(i * 100, 0, 100, 100, player_hit_stone);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		// ダメージアニメーション
+		playerImages[static_cast<int>(state::FIRE)][i] = DerivationGraph(i * 100, 0, 100, 100, player_hit_fire);
+	}
+
 	return true;
 }
 
 void Player::GameInit(void)
 {
 	playerPos.x = PLAYER_WID;
-	playerPos.y = PLAYER_HIG + 570;
+	playerPos.y = PLAYER_HIG + 750;
 
 	jumpSpeed = 0.0f;
 	gravity = 0.8f;
@@ -56,15 +85,33 @@ void Player::GameInit(void)
 	animCounter = 0;
 	frame = 0;
 	aliveFlg = true;
-	hp = PLAYER_HP_MAX;
+	hp = 8;
+
+	damageTimer = 0;
 
 	currentstate = state::IDLE;
 }
 
 void Player::Update(void)
 {
+	if (invincibleTime > 0.0f) 
+	{
+		invincibleTime -= (1.0f / 60.0f);
+		if (invincibleTime < 0.0f) invincibleTime = 0.0f;
+	}
+
 	animCounter++;
 	if (animCounter >= 60) animCounter = 0;
+
+	if (damageTimer > 0)
+	{
+		damageTimer--;
+		if (damageTimer == 0)
+		{
+			currentstate = state::IDLE; // タイマーが切れたら通常状態に戻る
+		}
+		return; 
+	}
 
 	currentstate = state::IDLE;
 
@@ -94,9 +141,9 @@ void Player::Update(void)
 		|| analogKeyX > 0)
 	{
 		playerPos.x += MOVE_SPEED;
-		if (playerPos.x > (Application::SCREEN_SIZE_WID - 600))
+		if (playerPos.x > (Application::SCREEN_SIZE_WID - 800))
 		{
-			playerPos.x = Application::SCREEN_SIZE_WID - 600;
+			playerPos.x = Application::SCREEN_SIZE_WID - 800;
 		}
 		playerDir = static_cast<int>(AsoUtility::DIR::RIGHT);
 
@@ -107,8 +154,10 @@ void Player::Update(void)
 		(CheckHitKey(KEY_INPUT_SPACE)
 			|| isPadBtnPressed))
 	{
-		jumpSpeed = -15.0f; // 上方向への速度
+		PlaySoundMem(sound, DX_PLAYTYPE_BACK);
+		jumpSpeed = -18.0f; // 上方向への速度
 		isJumping = true;
+		
 	}
 
 	if (isJumping)
@@ -119,7 +168,7 @@ void Player::Update(void)
 
 
 		// 地面に戻ってきたか判定
-		float groundY = PLAYER_HIG + 570;
+		float groundY = PLAYER_HIG + 750;
 		if (playerPos.y >= groundY)
 		{
 			playerPos.y = groundY; // 地面にめり込まないように位置調整
@@ -137,16 +186,32 @@ void Player::Draw(void)
 	{
 		animNo = 0;
 	}
+	else if (currentstate == state::STONE)
+	{
+		animNo = (animCounter / ANIM_INTERVAL) % 2;
+	}
 	else if (currentstate == state::JUMP)
 	{
 		animNo = (animCounter / ANIM_INTERVAL) % 3;
 	}
-	else {
+	else if (currentstate == state::FIRE)
+	{
+		//ダメージアニメーションは6コマでパラパラさせる
+		animNo = (animCounter / ANIM_INTERVAL) % 4;
+	}
+	else
+	{
 		animNo = (animCounter / ANIM_INTERVAL) % 6;
 	}
 
 	// 現在の画像ハンドルを取得
 	int currentHandle = playerImages[static_cast<int>(currentstate)][animNo];
+
+
+	if (damageTimer > 0)
+	{
+		if ((damageTimer % 4) < 2) return; // 2フレームに1回、描画をスキップして点滅
+	}
 
 	if (playerDir == static_cast<int>(AsoUtility::DIR::LEFT))
 	{
@@ -159,13 +224,23 @@ void Player::Draw(void)
 		DrawGraph(playerPos.x, playerPos.y, currentHandle, true);
 	}
 
+
 }
 
 bool Player::Release(void)
 {
-	if (player_img != -1) {
-		if (DeleteGraph(player_img) == -1) return false;
-	}
+	if (sound != -1) DeleteSoundMem(sound);
+
+	if (player_img != -1) DeleteGraph(player_img);
+
+	if (player_run != -1) DeleteGraph(player_run);
+
+	if (player_jump != -1) DeleteGraph(player_jump);
+
+	if (player_hit_stone != -1) DeleteGraph(player_hit_stone);
+
+	if (player_hit_fire != -1) DeleteGraph(player_hit_fire);   
+
 	return true;
 }
 
@@ -174,11 +249,20 @@ bool Player::Release(void)
 //    int dp : ダメージ
 // Ountput:
 //    無し
-void Player::SetDamage(int dp)
+void Player::SetDamage(int dp, state damageState)
 {
+	invincibleTime = 1.0f;
+
 	hp -= dp;
-	if (hp <= 0) {
+	if (hp <= 0)
+	{
 		hp = 0;
 		aliveFlg = false;
+	}
+	else
+	{
+		damageTimer = 30;
+		currentstate = damageState;
+		animCounter = 0;    
 	}
 }

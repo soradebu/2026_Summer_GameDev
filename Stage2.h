@@ -3,6 +3,7 @@
 #include <vector>
 #include "StDefine.h"
 #include "Vector2.h"
+#include "SceneBase.h"
 
 class Enemy;
 class Player;
@@ -10,8 +11,9 @@ class Knife;
 class Fire;
 class Stone;
 
-class Stage2
+class Stage2 : public SceneBase
 {
+
 
 public:
 	static constexpr int HAIKEI_WID = 1920;			// ”wŒi‰æ‘œ‚Ì‰¡ƒTƒCƒY

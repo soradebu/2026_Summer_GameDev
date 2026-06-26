@@ -20,6 +20,7 @@ void SceneBase::Draw(void)
 {
 }
 
-void SceneBase::Release(void)
+bool SceneBase::Release(void)
 {
+	return true;
 }

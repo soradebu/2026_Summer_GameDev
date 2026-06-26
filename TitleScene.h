@@ -9,7 +9,10 @@ public:
 	static constexpr int TITLE_SIZE_HIG = 1080;		// タイトル画像の縦サイズ
 
 	static constexpr int BUTTON_WID = 480;		// ボタン画像の横サイズ
-	static constexpr int BUTTON_HIG = 480;		// ボタン画像の縦サイズ
+	static constexpr int BUTTON_HIG = 320;		// ボタン画像の縦サイズ
+
+	static constexpr int PLAY_WID = 100;		// ボタン画像の横サイズ
+	static constexpr int PLAY_HIG = 93;		// ボタン画像の縦サイズ
 
 	TitleScene(void);
 	~TitleScene(void);
@@ -29,7 +32,7 @@ private:
 	int exit;					    // exit画像のハンドル番号
 	int exit_after;					// exit画像のハンドル番号
 
-	int sb;							// セレクトバー画像のハンドル番号
+	int pl;							// PLAY画像のハンドル番号
 
 	int idx;                        // 現在選択中のインデックス
 

@@ -24,7 +24,14 @@ public:
 private:
 
 	int goImage;                    // ゲームオーバー画面のハンドル番号
+
 	E_SCENE_ID nextSceneID;         // 次に遷移するシーンのID
+
+	int	 padInput;
+	bool isPadBtnPressed;			//PAD
+
+	int bgm;
+
 	int preNextKey, nowNextKey;
 	int prevSpaceKey, nowSpaceKey;	// スペースキーの状態を保存する変数
 };
