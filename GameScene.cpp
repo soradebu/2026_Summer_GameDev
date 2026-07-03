@@ -197,6 +197,8 @@ void GameScene::Update(void)
 	prevStickUp = nowStickUp;		// 現在の位置保存
 	prevStickDown = nowStickDown;	// 現在の位置保存
 
+	Vector2 pPos = player->GetPlayerPos();
+
 	if (knife != nullptr && player != nullptr)
 	{
 		knife->Update(player->GetPlayerPos());
@@ -349,7 +351,6 @@ void GameScene::Update(void)
 
 				if (isRight)
 				{
-					Vector2 pPos = player->GetPlayerPos();
 					pPos.x += 32;
 					pPos.y -= 32;
 
@@ -387,7 +388,6 @@ void GameScene::Update(void)
 		hitEffect.timer--;
 		if (hitEffect.timer <= 0) hitEffect.active = false;
 	}
-
 }
 
 
@@ -594,6 +594,10 @@ void GameScene::Collision(void)
 {
 	Vector2 bpos;
 
+	Vector2 pPos = player->GetPlayerPos();
+	Vector2 ePos = enemy->GetEnemyPos();
+
+
 	if (knife != nullptr && knife->GetCutFlg() == true)
 	{
 		Vector2 knifePos = knife->GetKnifePos();
@@ -725,6 +729,21 @@ void GameScene::Collision(void)
 				fire->GameInit(); // 炎を消す処理
 			}
 		}
+	}
+
+
+	float diffX = pPos.x - ePos.x;
+	float diffY = pPos.y - ePos.y;
+
+	if (abs(diffX) < 64 && abs(diffY) < 64)
+	{
+		player->SetDamage(1, Player::state::STONE);
+
+		// 吹き飛ぶ方向を決定（敵より右にいれば右へ、左にいれば左へ)
+		float knockbackDir = (diffX > 0) ? 1.0f : -1.0f;
+
+		// プレイヤーのノックバック関数を呼び出す
+		player->TriggerKnockback(knockbackDir);
 	}
 }
 

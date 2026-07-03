@@ -1,12 +1,10 @@
 #include  <DxLib.h>
 #include "InputManager.h"
-#include "Enemy.h"
+#include "EnemyMino.h"
 #include "Knife.h"
-#include "Fire.h"
 #include "Stage2.h"
 #include "Application.h"
 #include "Player.h"
-#include "Stone.h"
 
 
 
@@ -20,9 +18,8 @@ Stage2::Stage2(void)
 
 	bgm = -1;
 	player = nullptr;
-	enemy = nullptr;
+	mino = nullptr;
 	knife = nullptr;
-	fire = nullptr;
 }
 
 Stage2::~Stage2(void)
@@ -36,44 +33,22 @@ bool Stage2::SystemInit(void)
 	player = new Player(this);
 	if (player == nullptr)return false;
 
-	enemy = new Enemy(this);
-	if (enemy == nullptr)return false;
+	mino = new EnemyMino(this);
+	if (mino == nullptr)return false;
 
 	knife = new Knife(this);
 	if (knife == nullptr)return false;
 
-	fire = new Fire(this);
-	if (fire == nullptr)return false;
-
-	for (int i = 0; i < STONE_MAX; i++) {
-		stones[i] = new Stone(this);
-	}
-
-	if (stones == nullptr)return false;
-
 	if (player->SystemInit() == false)return false;
 
-	if (enemy->SystemInit() == false)return false;
+	if (mino->SystemInit() == false)return false;
 
 	if (knife->SystemInit() == false)return false;
 
-	if (fire->SystemInit() == false)return false;
-
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		if (stones[i]->SystemInit() == false)
-		{
-			return false; // 1個でも初期化に失敗したらfalseを返す
-		}
-	}
-
 	// ゲーム背景画像の読み込み
-	img = LoadGraph("image/stage1.jpg");
+	img = LoadGraph("image/Stage1.jpg");
 	if (img == -1)return false;
-
-	effectImg = LoadGraph("image/effect.png");
-	if (effectImg == -1)return false;
-
+	
 	pauseimg = LoadGraph("image/Pause.png");
 	if (pauseimg == -1)return false;
 
@@ -109,20 +84,8 @@ bool Stage2::SystemInit(void)
 void Stage2::GameInit(void)
 {
 	player->GameInit();
-	enemy->GameInit();
+	mino->GameInit();
 	knife->GameInit();
-	fire->GameInit();
-
-
-
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		if (stones[i] != nullptr)
-		{
-			stones[i]->GameInit();   // 画面でエラーになっていた関数
-		}
-	}
-
 
 	enCounter = 0;
 	prevShotKey = nowShotKey = 0;
@@ -197,15 +160,6 @@ void Stage2::Update(void)
 	prevStickUp = nowStickUp;		// 現在の位置保存
 	prevStickDown = nowStickDown;	// 現在の位置保存
 
-	if (knife != nullptr && player != nullptr)
-	{
-		knife->Update(player->GetPlayerPos());
-	}
-
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		stones[i]->Update();
-	}
 
 	if (sState == SceneState::PAUSE)
 	{
@@ -250,9 +204,7 @@ void Stage2::Update(void)
 	if (sState == SceneState::PLAYING)
 	{
 		player->Update();
-		enemy->Update();
-		fire->Update();
-
+		mino->Update();
 
 		if (prevEscapeKey == 0 && nowEscapeKey == 1 || isPadBtnPressed2)
 		{
@@ -260,75 +212,7 @@ void Stage2::Update(void)
 			pauseMenuCursor = 0;
 			return;
 		}
-
 	}
-
-	//-----------------------------------------
-	//数フレームごとに石を1個ずつ落とす
-	//-----------------------------------------
-	if (isSpawnActive)
-	{
-		spawnTimer++;
-
-		// 最初（1フレーム目）または、12フレーム経つごとに石を落とす
-		// ※ 12 の数字を小さくするとさらに高速でパラパラ落ちてきます
-		if (spawnedCount == 0 || spawnTimer >= 12)
-		{
-			// まだ落とすべき石が残っていれば
-			if (spawnedCount < STONE_MAX)
-			{
-				if (stones[spawnedCount] != nullptr)
-				{
-					// ランダムな位置から落とす
-					float spawnX = (float)(120 + rand() % 1081);
-					stones[spawnedCount]->activate(spawnX, 0.0f);
-				}
-
-				spawnedCount++; // 落とした数をカウントアップ
-				spawnTimer = 0; // 次の石へのタイマーをリセット
-			}
-		}
-
-		// ５個をすべて落とし終えたらルーチンを終了
-		if (spawnedCount >= STONE_MAX)
-		{
-			isSpawnActive = false;
-		}
-
-	}
-
-	//-----------------------------------------
-	// 敵の叩きつけを検知したら連続落下モードを起動
-	//-----------------------------------------
-
-	if (enemy != nullptr)
-	{
-		if (enemy->CheckAndResetPoundFlag())
-		{
-			PlaySoundMem(zimenSE, DX_PLAYTYPE_BACK);
-
-			// すでに落下中のときは重ならないようにする
-			if (!isSpawnActive)
-			{
-				isSpawnActive = true;        // 時間差落下開始
-				spawnTimer = 0;              // タイマーリセット
-				spawnedCount = 0;            // 落としたカウントをゼロに
-			}
-		}
-	}
-
-	//敵が吠えるのを確認したら火を出す
-	if (enemy != nullptr)
-	{
-		// 火の処理
-		if (enemy->CheckAndResetFireFlag()) {
-			fire->Activate(enemy->GetEnemyPos().x - 50.0f, enemy->GetEnemyPos().y + 50.0f);
-
-			PlaySoundMem(sound1, DX_PLAYTYPE_BACK);
-
-		}
-	}
-
 
 	if (knifeDelayTimer > 59)
 	{
@@ -358,18 +242,8 @@ void Stage2::Update(void)
 				}
 
 			}
-
-
-
 		}
 	}
-
-	if (hitEffect.active) {
-		hitEffect.timer--;
-		if (hitEffect.timer <= 0) hitEffect.active = false;
-	}
-
-	Collision();
 
 	if (player != nullptr && player->GetAlive() <= 0)
 	{
@@ -377,49 +251,36 @@ void Stage2::Update(void)
 		nextSceneID = E_SCENE_GAMEOVER;
 	}
 
-	if (enemy != nullptr && enemy->GetAlive() == false)
+	if (mino != nullptr && mino->GetAlive() == false)
 	{
 		StopSoundMem(bgm);
 		nextSceneID = E_SCENE_GAMECLEAR;
 	}
-
-	if (hitEffect.active) {
-		hitEffect.timer--;
-		if (hitEffect.timer <= 0) hitEffect.active = false;
-	}
-
 }
 
 
-//描画処理
+// 描画処理
 void Stage2::Draw(void)
 {
 	int haikeiPosX = (Application::SCREEN_SIZE_WID - HAIKEI_WID) / 2;
 
 	int haikeiPosY = (Application::SCREEN_SIZE_HIG - HAIKEI_HIG) / 2;
 
-	// 1枚目の背景
-	DrawGraph(haikeiPosX, haikeiPosY, img, true);
+	// 描画背景
+	DrawGraph(0, 0, img, true);
 
 	player->Draw();
 
-	enemy->Draw();
+	mino->Draw();
 
 	knife->Draw();
-
-	fire->Draw();
-
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		stones[i]->Draw();
-	}
 
 	int hx = 10;
 	int hy = -30;
 
 	int currentHp = player->GetHP();
 
-	int currentenemyHp = enemy->GetHP();
+	int currentenemyHp = mino->GetHP();
 
 #if 0
 
@@ -442,19 +303,18 @@ void Stage2::Draw(void)
 
 	if (currentHp > 0)
 	{
-		//画面の左上に配置するサイズと座標
-		int pBarWidth = 400;                                 // プレイヤーHPバーの横幅（ボスの半分くらい）
-		int pBarHeight = 40;                                 // プレイヤーHPバーの縦幅（少しスマートに）
-		int pBarX = 50;                                      // 画面左端から20ピクセル右
-		int pBarY = 980;                                     // 画面上端から40ピクセル下
+		int pBarWidth = 400;                                 // プレイヤーHPバーの横幅
+		int pBarHeight = 40;                                 // プレイヤーHPバーの縦幅
+		int pBarX = 50;                                     
+		int pBarY = 980;                                    
 
 		//現在のHPの割合から、残りHPバーの長さを計算
 		int redBarWidth = static_cast<int>(pBarWidth * (static_cast<float>(currentHp) / 8));
 
-		//外側の白枠
+		//外側の白
 		DrawBox(pBarX - 3, pBarY - 3, pBarX + pBarWidth + 3, pBarY + pBarHeight + 3, GetColor(255, 255, 255), true);
 
-		//内側の黒背
+		//内側の黒
 		DrawBox(pBarX, pBarY, pBarX + pBarWidth, pBarY + pBarHeight, GetColor(255, 0, 0), true);
 
 		DrawBox(pBarX, pBarY, pBarX + redBarWidth, pBarY + pBarHeight, GetColor(76, 175, 50), true);
@@ -465,16 +325,15 @@ void Stage2::Draw(void)
 
 	if (currentenemyHp > 0)
 	{
-		//バーの表示位置とサイズ
-		int barWidth = 1000;													// バー全体の横幅
+		int barWidth = 1000;													// バーの横幅
 		int barHeight = 50;														// バーの縦幅
-		int barX = (Application::SCREEN_SIZE_WID - barWidth) / 2 + 400;		    // 画面中央のX座標
-		int barY = 80;															// 画面上端からのY座標
+		int barX = (Application::SCREEN_SIZE_WID - barWidth) / 2 + 400;		    
+		int barY = 80;															
 
-		//現在のHPの割合から、緑色のバーの長さを計算
+		//現在のHPの割合から、緑バーの長さ計算
 		int greenBarWidth = static_cast<int>(barWidth * (static_cast<float>(currentenemyHp) / 20));
 
-		//外側の白枠
+		//外側の白
 		DrawBox(barX - 4, barY - 4, barX + barWidth + 4, barY + barHeight + 4, GetColor(255, 255, 255), true);
 
 		//内側の赤
@@ -513,18 +372,13 @@ void Stage2::Draw(void)
 		DrawGraph(arrowX, arrowY, pl, true);
 	}
 
-	if (hitEffect.active) {
-		// 透過度やサイズをタイマーに合わせて調整
-		DrawGraph(hitEffect.x - 32, hitEffect.y - 32, effectImg, true);
-	}
-
 }
 
 //開放処理
 bool Stage2::Release(void)
 {
 	if (DeleteGraph(img) == -1)return false;
-	if (DeleteGraph(effectImg) == -1)return false;
+
 
 	if (sound != -1)
 	{
@@ -565,166 +419,34 @@ bool Stage2::Release(void)
 	delete player;
 	player = nullptr;
 
-	enemy->Release();
-	delete enemy;
-	enemy = nullptr;
+	mino->Release();
+	delete mino;
+	mino = nullptr;
 
 	knife->Release();
 	delete knife;
 	knife = nullptr;
-
-	fire->Release();
-	delete fire;
-	fire = nullptr;
-
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		if (stones[i] != nullptr)
-		{
-			stones[i]->Release();
-			delete stones[i];
-			stones[i] = nullptr;
-		}
-	}
 
 	return true;
 }
 
 void Stage2::Collision(void)
 {
-	Vector2 bpos;
+	Vector2 pPos = player->GetPlayerPos();
+	Vector2 ePos = mino->GetEnemyPos();
 
-	if (knife != nullptr && knife->GetCutFlg() == true)
+	float diffX = pPos.x - ePos.x;
+	float diffY = pPos.y - ePos.y;
+
+	if (abs(diffX) < 200 && abs(diffY) < 200)
 	{
-		Vector2 knifePos = knife->GetKnifePos();
-		float knifeRadius = knife->GetRadius();
+		player->SetDamage(1, Player::state::STONE);
 
-		for (int i = 0; i < STONE_MAX; i++)
-		{
-			if (stones[i] != nullptr && stones[i]->IsStoneActive())
-			{
-				Vector2 stonePos = stones[i]->GetStonePos();
+		// 吹き飛ぶ方向を決定（敵より右にいれば右へ、左にいれば左へ)
+		float knockbackDir = (diffX > 0) ? 1.0f : -1.0f;
 
-				float diffX = stonePos.x - knifePos.x;
-				float diffY = stonePos.y - knifePos.y;
-				float distanceSq = (diffX * diffX) + (diffY * diffY);
-
-				float combinedRadius = knifeRadius + stones[i]->GetStoneRadius();
-				float combinedRadiusSq = combinedRadius * combinedRadius;
-
-				if (distanceSq < combinedRadiusSq)
-				{
-					stones[i]->OnHit();
-					PlaySoundMem(sound, DX_PLAYTYPE_BACK);
-				}
-			}
-		}
-	}
-
-	// すべての石に対して、敵かプレイヤーのどちらか片方だけに当たるようにループを綺麗にまとめる
-	for (int i = 0; i < STONE_MAX; i++)
-	{
-		if (stones[i] == nullptr || !stones[i]->IsStoneActive()) continue;
-
-		Vector2 stonePos = stones[i]->GetStonePos();
-
-		Vector2 firePos = fire->GetFirePos();
-
-		if (enemy != nullptr && enemy->GetAlive())
-		{
-			Vector2 enemyPos = enemy->GetEnemyPos();
-			float enemyRadius = 180.0f;
-
-			float diffX = stonePos.x - enemyPos.x;
-			float diffY = stonePos.y - enemyPos.y;
-			float distanceSq = (diffX * diffX) + (diffY * diffY);
-
-			float combinedRadius = enemyRadius + stones[i]->GetStoneRadius();
-			float combinedRadiusSq = combinedRadius * combinedRadius;
-
-			if (distanceSq < combinedRadiusSq)
-			{
-				hitEffect.x = stonePos.x;
-				hitEffect.y = stonePos.y;
-				hitEffect.timer = 10; // 10フレームで消える設定
-				hitEffect.active = true;
-
-				enemy->SetDamage(1);	// 敵にダメージ
-				stones[i]->GameInit();  // 石を消す
-
-				PlaySoundMem(attackSE, DX_PLAYTYPE_BACK);
-
-				continue;              // この石は処理終了、次の石のループへ！
-
-			}
-		}
-
-		if (player != nullptr && player->GetHP() > 0)
-		{
-			Vector2 playerPos = player->GetPlayerPos();
-			float playerRadius = 37.0f;
-
-			float diffX = stonePos.x - playerPos.x;
-			float diffY = stonePos.y - playerPos.y;
-			float distanceSq = (diffX * diffX) + (diffY * diffY);
-
-			float combinedRadius = playerRadius + stones[i]->GetStoneRadius();
-			float combinedRadiusSq = combinedRadius * combinedRadius;
-
-			if (distanceSq < combinedRadiusSq)
-			{
-				if (player->GetDamageTimer() > 0)
-				{
-					continue;
-				}
-
-				if (player->GetInvincibleTime() > 0.0f)
-				{
-					// 無敵時間中は何もせずスキップ
-					continue;
-				}
-
-				player->SetDamage(1, Player::state::STONE); // 岩ダメージ画像を再生
-
-				stones[i]->GameInit(); // 石を消す
-
-				PlaySoundMem(hidanSE, DX_PLAYTYPE_BACK);
-
-
-				continue;           //この石は処理終了
-			}
-		}
-	}
-
-	if (fire != nullptr && fire->GetActiveFlg())
-	{
-		Vector2 firePos = fire->GetFirePos();
-		Vector2 playerPos = player->GetPlayerPos();
-
-		float diffX = firePos.x - playerPos.x;
-		float diffY = firePos.y - playerPos.y;
-		float distanceSq = (diffX * diffX) + (diffY * diffY);
-
-		float combinedRadius = 100.0f + fire->GetFireRadius();
-
-		if (distanceSq < (combinedRadius * combinedRadius))
-		{
-
-			if (player->GetInvincibleTime() > 0.0f)
-			{
-				// 無敵時間中は何もせずスキップ
-				return;
-			}
-
-			if (player != nullptr && player->GetDamageTimer() == 0)
-			{
-				player->SetDamage(1, Player::state::FIRE); // 火ダメージ画像を再生
-
-				PlaySoundMem(hidanSE1, DX_PLAYTYPE_BACK);
-
-				fire->GameInit(); // 炎を消す処理
-			}
-		}
+		// プレイヤーのノックバック関数を呼び出す
+		player->TriggerKnockback(knockbackDir);
 	}
 }
 
