@@ -75,8 +75,15 @@ bool Player::SystemInit(void)
 
 void Player::GameInit(void)
 {
-	playerPos.x = PLAYER_WID;
-	playerPos.y = PLAYER_HIG + 750;
+	pPos.x = PLAYER_WID;
+	pPos.y = PLAYER_HIG + 750;
+
+	isKnockback = false;   
+
+	knockbackTimer = 0;     
+
+	vx = 0.0f;            // プレイヤーの現在のX速度
+	vy = 0.0f;			  // プレイヤーの現在のY速度
 
 	jumpSpeed = 0.0f;
 	gravity = 0.8f;
@@ -130,8 +137,8 @@ void Player::Update(void)
 	if (CheckHitKey(KEY_INPUT_A)
 		|| analogKeyX < 0)
 	{
-		playerPos.x -= MOVE_SPEED;
-		if (playerPos.x < (PLAYER_WID / 5))playerPos.x = PLAYER_WID / 5;
+		pPos.x -= MOVE_SPEED;
+		if (pPos.x < (PLAYER_WID / 5))pPos.x = PLAYER_WID / 5;
 		playerDir = static_cast<int>(AsoUtility::DIR::LEFT);
 
 		currentstate = state::RUN;
@@ -140,11 +147,8 @@ void Player::Update(void)
 	if (CheckHitKey(KEY_INPUT_D)
 		|| analogKeyX > 0)
 	{
-		playerPos.x += MOVE_SPEED;
-		if (playerPos.x > (Application::SCREEN_SIZE_WID - 800))
-		{
-			playerPos.x = Application::SCREEN_SIZE_WID - 800;
-		}
+		pPos.x += MOVE_SPEED;
+		if (pPos.x > 1800 )pPos.x = 1800;
 		playerDir = static_cast<int>(AsoUtility::DIR::RIGHT);
 
 		currentstate = state::RUN;
@@ -163,18 +167,36 @@ void Player::Update(void)
 	if (isJumping)
 	{
 		currentstate = state::JUMP;
-		playerPos.y += jumpSpeed;
+		pPos.y += jumpSpeed;
 		jumpSpeed += gravity;
 
 
 		// 地面に戻ってきたか判定
 		float groundY = PLAYER_HIG + 750;
-		if (playerPos.y >= groundY)
+		if (pPos.y >= groundY)
 		{
-			playerPos.y = groundY; // 地面にめり込まないように位置調整
+			pPos.y = groundY; // 地面にめり込まないように位置調整
 			isJumping = false;     // 着地
 			jumpSpeed = 0.0f;
 		}
+	}
+
+	if (isKnockback)
+	{
+		pPos.x += vx;
+		pPos.y += vy; 
+
+		vx *= 0.95f;
+
+		knockbackTimer--;
+
+		if (knockbackTimer <= 0)
+		{
+			isKnockback = false;
+			vx = 0.0f;
+			vy = 0.0f;
+		}
+		return;
 	}
 }
 
@@ -216,12 +238,12 @@ void Player::Draw(void)
 	if (playerDir == static_cast<int>(AsoUtility::DIR::LEFT))
 	{
 		//左右反転して描画する
-		DrawTurnGraph(playerPos.x, playerPos.y, currentHandle, true);
+		DrawTurnGraph(pPos.x, pPos.y, currentHandle, true);
 	}
 	else
 	{
 		// 右向き時（RIGHT）通常の向きで描画する
-		DrawGraph(playerPos.x, playerPos.y, currentHandle, true);
+		DrawGraph(pPos.x, pPos.y, currentHandle, true);
 	}
 
 
@@ -265,4 +287,15 @@ void Player::SetDamage(int dp, state damageState)
 		currentstate = damageState;
 		animCounter = 0;    
 	}
+}
+
+void Player::TriggerKnockback(float dir)
+{
+	if (isKnockback) return; // 連続で当たり判定が起きない
+
+	isKnockback = true;
+	knockbackTimer = 20; 
+
+	vx = dir * 8.0f;    
+	vy = -4.0f;
 }

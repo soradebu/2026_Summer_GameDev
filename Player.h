@@ -57,6 +57,8 @@ public:
 
 	bool GetIsJumping(void) const { return isJumping; }
 
+	void TriggerKnockback(float dir);
+
 private:
 	SceneBase* m_pScene;
 
@@ -88,7 +90,7 @@ private:
 	bool isPadBtnPressed;			//PAD
 
 	//プレイヤーの表示座標
-	Vector2 playerPos;
+	Vector2 pPos;
 	//フレーム
 	int frame;
 	//ヒットポイント
@@ -115,4 +117,10 @@ private:
 	int damageTimer;
 
 	float invincibleTime = 0.0f;
+
+	bool isKnockback ;		// ノックバック中
+	int knockbackTimer ;	// ノックバック残りの時間
+
+	float vx ;				// プレイヤーのX速度
+	float vy ;				// プレイヤーのY速度
 };
