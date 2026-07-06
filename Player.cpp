@@ -297,5 +297,5 @@ void Player::TriggerKnockback(float dir)
 	knockbackTimer = 20; 
 
 	vx = dir * 8.0f;    
-	vy = -4.0f;
+	vy = 0.0f;
 }

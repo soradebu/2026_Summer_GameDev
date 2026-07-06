@@ -256,6 +256,8 @@ void Stage2::Update(void)
 		StopSoundMem(bgm);
 		nextSceneID = E_SCENE_GAMECLEAR;
 	}
+
+	Collision();
 }
 
 
@@ -432,18 +434,28 @@ bool Stage2::Release(void)
 
 void Stage2::Collision(void)
 {
+	if (player->GetIsKnockback() == true)
+	{
+		return;
+	}
+
 	Vector2 pPos = player->GetPlayerPos();
 	Vector2 ePos = mino->GetEnemyPos();
 
 	float diffX = pPos.x - ePos.x;
 	float diffY = pPos.y - ePos.y;
 
-	if (abs(diffX) < 200 && abs(diffY) < 200)
+	if (abs(diffX) < 100 && abs(diffY) < 300)
 	{
 		player->SetDamage(1, Player::state::STONE);
 
+		if (mino->currentstate)
+		{
+
+		}
+
 		// 吹き飛ぶ方向を決定（敵より右にいれば右へ、左にいれば左へ)
-		float knockbackDir = (diffX > 0) ? 1.0f : -1.0f;
+		float knockbackDir = (diffX > 0) ? 3.0f : -3.0f;
 
 		// プレイヤーのノックバック関数を呼び出す
 		player->TriggerKnockback(knockbackDir);

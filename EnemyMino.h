@@ -68,14 +68,22 @@ private:
 
 	//今描画する画像番号
 	int currentImg;
+
 	//待機アニメーション用タイマー
 	int animeTimer;
 
 	int animNo;
 
+	int aTimer;
+
+	int goTimer;
+
+	float moveSpeedX;
+
 	//Vector2 enemyPos;
 	Vector2F Pos;       //敵表示座標
 
+	bool isCharging;
 	int animCounter;    //アニメーションカウンター
 	int hp;             //ヒットポイント
 	int hpMax;          //ヒットポイントの最大値

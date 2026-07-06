@@ -18,7 +18,7 @@ EnemyMino::~EnemyMino(void)
 bool EnemyMino::SystemInit(void)
 {
 	mino_img[0] = LoadGraph("image/Boss_2/Pose_1.png");
-	mino_img[1] = LoadGraph("image/Boss_2/Pose_1.png");
+	mino_img[1] = LoadGraph("image/Boss_2/Pose_2.png");
 
 	mino_run[0] = LoadGraph("image/Boss_2/Run_1.png");
 	mino_run[1] = LoadGraph("image/Boss_2/Run_2.png");
@@ -82,65 +82,149 @@ bool EnemyMino::SystemInit(void)
 
 void EnemyMino::GameInit(void)
 {
-	Pos.x = 1200;
+	Pos.x = 1440;
 	Pos.y = 570;
 	hp = 20;
 	animCounter = 0;
+	animeTimer = 0;
 	aliveFlg = true;
+	aTimer = 200;
+	goTimer = 30;
+	moveSpeedX = 0;
 	currentImg = -1;
+
+	isCharging = false;
 
 	currentstate = state::IDLE;
 }
 
 void EnemyMino::Update(void)
 {
+	if (!aliveFlg) return;
 	animeTimer++;
 
-	if (animeTimer >= 10) 
+	if (currentstate != state::RUN)
+	{
+		aTimer--;
+	}
+
+	if (aTimer <= 0)
+	{
+		int pat = GetRand(3);
+
+		if (pat == 3)
+		{
+			currentstate = state::RUN;
+			aTimer = 2000;
+		}
+		else
+		{
+			currentstate = state::ATTACK;
+			aTimer = 10000;
+
+			isCharging = false;
+		}
+
+		animNo = 0;
+		animeTimer = 0;
+
+		if (currentstate == state::IDLE)
+		{
+			animNo = 0;
+			animeTimer = 0;
+
+			isCharging = false; 
+		}
+	}
+
+	if (currentstate == state::RUN)
+	{
+		if (goTimer >= 0)
+		{
+			goTimer--;
+
+			isCharging = true;
+		}
+		else
+		{
+			Pos.x += moveSpeedX;
+			isCharging = false;
+
+			if (Pos.x <= 320.0f)
+			{
+				Pos.x = 320.0f;
+				moveSpeedX = 20.0f;
+			}
+
+			if (Pos.x >= 1440.0f)
+			{
+				Pos.x = 1440.0f;
+				moveSpeedX = -100.0f;
+
+				currentstate = state::IDLE;
+				aTimer = 120;
+
+				goTimer = 30;
+			}
+		}
+
+	}
+
+	animeTimer++;
+
+	int animSpeed = 15; // デフォルト
+	if (currentstate == state::RUN)    animSpeed = 6;  
+	if (currentstate == state::ATTACK) animSpeed = 20; 
+
+	if (animeTimer >= animSpeed)
 	{
 		animeTimer = 0;
 		animNo++;
 
-		// 現在の状態に応じた最大コマ数を設定する
-		int maxFrames = 2; // デフォルト（待機は2コマ）
+		int maxFrames = 2;
+		if (currentstate == state::RUN)    maxFrames = 4;
+		if (currentstate == state::ATTACK) maxFrames = 5;
 
-		if (currentstate == state::RUN)   maxFrames = 4; // 移動は4コマ
-		if (currentstate == state::ATTACK) maxFrames = 5; // 攻撃は5コマ
-
-		// コマ数が最大値に達したら 0 に戻してループさせる
 		if (animNo >= maxFrames)
 		{
+			if (currentstate == state::ATTACK)
+			{
+				currentstate = state::IDLE;
+				aTimer = 60 + GetRand(30);
+			}
+
 			animNo = 0;
 		}
 	}
-
-	currentstate = state::IDLE;
 }
 
 void EnemyMino::Draw(void)
 {
-	// -------------------------------------------------------------
+	if (!aliveFlg) return;
+
 	// 現在の画像ハンドルを取得
 	int currentHandle = minoImages[static_cast<int>(currentstate)][animNo];
 
-	DrawTurnGraph(Pos.x, Pos.y, currentHandle, TRUE);
+	// 走行前は赤くそれ以外は通常
+	if (currentHandle > 0 && currentHandle != -1)
+	{
+		if (isCharging)
+		{
+			SetDrawBright(255, 100, 100);
+		}
 
+		DrawTurnGraph(static_cast<int>(Pos.x), static_cast<int>(Pos.y), currentHandle, TRUE);
+
+		if (isCharging)
+		{
+			SetDrawBright(255, 255, 255); 
+		}
+	}
 }
 
 
 bool EnemyMino::Release(void)
 {
-	for (int a = 0; a < static_cast<int>(state::MAX); a++)
-	{
-		for (int b = 0; b < MAX_ANIMS; b++)
-		{
-			if (minoImages[a][b] > 0)
-			{
-				DeleteGraph(minoImages[a][b]);
-				minoImages[a][b] = 0;
-			}
-		}
-	}
 
 	for (int i = 0; i < 2; i++)
 	{

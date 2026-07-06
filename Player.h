@@ -41,8 +41,8 @@ public:
 	bool Release(void);            //開放処理（最後の一回のみ実行）
 
 	//ゲッター関数
-	Vector2 GetPlayerPos(void) { return playerPos; }
-	void SetPlayerPos(Vector2 mPos) { playerPos = mPos; }
+	Vector2 GetPlayerPos(void) { return pPos; }
+	void SetPlayerPos(Vector2 mPos) { pPos = mPos; }
 	int GetPlayerDir(void) { return playerDir; }
 
 	int GetHP(void) { return hp; }
@@ -58,6 +58,8 @@ public:
 	bool GetIsJumping(void) const { return isJumping; }
 
 	void TriggerKnockback(float dir);
+
+	bool GetIsKnockback(void) const { return isKnockback; }
 
 private:
 	SceneBase* m_pScene;
