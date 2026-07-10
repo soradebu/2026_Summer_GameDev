@@ -33,7 +33,7 @@ void Knife::GameInit(void)
 	pos.x = 0;
 	pos.y = 0;
 	CutFlg = false;
-	radius = 120.0f;        //右斜め上から下までカバーする半径
+	radius = 150.0f;        //右斜め上から下までカバーする半径
 	angle = 0.8f;           //右斜め下の固定角度
 	angleSpeed = 0.12f;     // 1フレームに進む角度
 	endAngle = 0.0f;

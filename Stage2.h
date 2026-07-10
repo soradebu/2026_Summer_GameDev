@@ -8,6 +8,7 @@
 class EnemyMino;
 class Player;
 class Knife;
+class Meteor;
 
 class Stage2 : public SceneBase
 {
@@ -17,8 +18,7 @@ public:
 	static constexpr int HAIKEI_WID = 1920;			// 背景画像の横サイズ
 	static constexpr int HAIKEI_HIG = 1080;			// 背景画像の縦サイズ
 
-	static constexpr int HAIKEI_MOVE_SPEED = 10;	// 背景の移動量
-
+	static constexpr int METEOR_MAX = 3;
 	static constexpr int KNIFE_DELAY_TIME = 60;
 
 	static constexpr int HP_WID = 640;			// 背景画像の横サイズ
@@ -44,7 +44,7 @@ public:
 
 	void Collision(void);
 
-	struct HitEffect 
+	struct HitEffect
 	{
 		float x, y;
 		int timer;
@@ -53,9 +53,14 @@ public:
 
 private:
 
-	Player* player;                   //プレイヤークラスのインスタンスポインタ
-	EnemyMino* mino;                     //エネミークラスのインスタンスのポインタ
-	Knife* knife;                     //ナイフクラスのインスタンスのポインタ
+	Player* player;                   // プレイヤークラスのインスタンスポインタ
+	EnemyMino* mino;                  // エネミークラスのインスタンスのポインタ
+	Knife* knife;                     // ナイフクラスのインスタンスのポインタ
+	Meteor* meteors[METEOR_MAX];      // メテオクラスのインスタンスのポインタ
+	Meteor* meteors_2[METEOR_MAX];    // メテオクラスのインスタンスのポインタ
+
+	HitEffect hitEffect;             //エフェクトのポインタ
+
 
 	// 1. ゲームシーン内の細かい状態を定義
 	enum class SceneState

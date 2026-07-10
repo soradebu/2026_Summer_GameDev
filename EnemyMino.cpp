@@ -115,12 +115,12 @@ void EnemyMino::Update(void)
 		if (pat == 3)
 		{
 			currentstate = state::RUN;
-			aTimer = 2000;
+			aTimer = 300;
 		}
 		else
 		{
 			currentstate = state::ATTACK;
-			aTimer = 10000;
+			aTimer = 300;
 
 			isCharging = false;
 		}
@@ -190,7 +190,6 @@ void EnemyMino::Update(void)
 			if (currentstate == state::ATTACK)
 			{
 				currentstate = state::IDLE;
-				aTimer = 60 + GetRand(30);
 			}
 
 			animNo = 0;
@@ -264,3 +263,17 @@ void EnemyMino::SetDamage(int dp)
 	}
 }
 
+bool EnemyMino::HalfHp(void)
+{
+	if (hp >= 10)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool EnemyMino::CheckAndResetPoundFlag()
+{
+	if (currentstate == state::ATTACK) { return true; }
+	return false;
+}

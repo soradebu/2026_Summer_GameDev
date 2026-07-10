@@ -50,6 +50,7 @@ public:
 
 	int GetHP(void) { return hp; }
 	void SetDamage(int dp);
+	bool HalfHp(void);
 
 private:
 	SceneBase* m_pScene;
@@ -84,10 +85,14 @@ private:
 	Vector2F Pos;       //敵表示座標
 
 	bool isCharging;
+
 	int animCounter;    //アニメーションカウンター
 	int hp;             //ヒットポイント
 	int hpMax;          //ヒットポイントの最大値
+
 	bool aliveFlg;      //生存フラグ
+
+	bool isGroundPounded;
 
 
 };

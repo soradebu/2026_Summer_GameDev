@@ -17,7 +17,7 @@ class GameScene : public SceneBase
 public:
 	static constexpr int HAIKEI_WID = 1920;			// ”wŒi‰æ‘œ‚Ì‰¡ƒTƒCƒY
 	static constexpr int HAIKEI_HIG = 1080;			// ”wŒi‰æ‘œ‚ÌcƒTƒCƒY
-	static constexpr int HAIKEI_MOVE_SPEED = 10;	// ”wŒi‚ÌˆÚ“®—Ê
+
 	static constexpr int STONE_MAX = 8;
 	static constexpr int KNIFE_DELAY_TIME = 60;
 

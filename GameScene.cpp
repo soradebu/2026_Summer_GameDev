@@ -1,8 +1,8 @@
 ﻿#include  <DxLib.h>
 #include"InputManager.h"
-#include"Enemy.h"
-#include"Knife.h"
-#include"Fire.h"
+#include "Enemy.h"
+#include "Knife.h"
+#include "Fire.h"
 #include "GameScene.h"
 #include "Application.h"
 #include "Player.h"
@@ -23,6 +23,11 @@ GameScene::GameScene(void)
 	enemy = nullptr;
 	knife = nullptr;
 	fire = nullptr;
+
+	for (int i = 0; i < STONE_MAX; i++)
+	{
+		stones[i] = nullptr;
+	}
 }
 
 GameScene::~GameScene(void)
@@ -528,12 +533,12 @@ bool GameScene::Release(void)
 
 	if (sound != -1)
 	{
-		DeleteSoundMem(sound);
+		if(DeleteSoundMem(sound) == -1) return false;
 	}
 
 	if (sound1 != -1)
 	{
-		DeleteSoundMem(sound1);
+		if (DeleteSoundMem(sound1) == -1) return false;
 	}
 
 	if (bgm != -1)

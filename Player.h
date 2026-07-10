@@ -93,10 +93,13 @@ private:
 
 	//プレイヤーの表示座標
 	Vector2 pPos;
+
 	//フレーム
 	int frame;
+
 	//ヒットポイント
 	int hp;
+
 	//サウンド
 	int sound;
 

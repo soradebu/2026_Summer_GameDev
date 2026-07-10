@@ -5,6 +5,7 @@
 #include "Stage2.h"
 #include "Application.h"
 #include "Player.h"
+#include "Meteor.h"
 
 
 
@@ -17,9 +18,16 @@ Stage2::Stage2(void)
 	pl = -1;
 
 	bgm = -1;
+
 	player = nullptr;
 	mino = nullptr;
-	knife = nullptr;
+	knife = nullptr;       
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		meteors[i] = nullptr;
+		meteors_2[i] = nullptr;
+	}
 }
 
 Stage2::~Stage2(void)
@@ -44,6 +52,15 @@ bool Stage2::SystemInit(void)
 	if (mino->SystemInit() == false)return false;
 
 	if (knife->SystemInit() == false)return false;
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		meteors[i] = new Meteor(this);
+		meteors_2[i] = new Meteor(this);
+
+		meteors[i]->SystemInit("image/Boss_2/meteor.png");
+		meteors_2[i]->SystemInit("image/Boss_2/meteor_2.png");
+	}
 
 	// ゲーム背景画像の読み込み
 	img = LoadGraph("image/Stage1.jpg");
@@ -80,12 +97,25 @@ bool Stage2::SystemInit(void)
 
 }
 
-//ゲーム起動・再開時に必ず呼び出す処理
+//ゲーム起動・再開時に必ず呼び出す処理o
 void Stage2::GameInit(void)
 {
 	player->GameInit();
 	mino->GameInit();
 	knife->GameInit();
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		if (meteors[i] != nullptr)
+		{
+			meteors[i]->GameInit();   // 画面でエラーになっていた関数
+		}
+
+		if (meteors_2[i] != nullptr)
+		{
+			meteors_2[i]->GameInit();   // 画面でエラーになっていた関数
+		}
+	}
 
 	enCounter = 0;
 	prevShotKey = nowShotKey = 0;
@@ -160,6 +190,18 @@ void Stage2::Update(void)
 	prevStickUp = nowStickUp;		// 現在の位置保存
 	prevStickDown = nowStickDown;	// 現在の位置保存
 
+	Vector2 pPos = player->GetPlayerPos();
+
+	if (knife != nullptr && player != nullptr)
+	{
+		knife->Update(player->GetPlayerPos());
+	}
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		meteors[i]->Update();
+		meteors_2[i]->Update();
+	}
 
 	if (sState == SceneState::PAUSE)
 	{
@@ -214,6 +256,86 @@ void Stage2::Update(void)
 		}
 	}
 
+	if (isSpawnActive)
+	{
+		spawnTimer++;
+
+		if (spawnedCount == 0 || spawnTimer >= 12)
+		{
+			// まだ落とすべき石が残っていれば
+			if (spawnedCount < METEOR_MAX )
+			{
+				if (spawnedCount + 2 < METEOR_MAX)
+				{
+					int pos[3] = { 800, 1300, 1800 };
+
+					// シャッフル
+					for (int i = 0; i < 3; i++)
+					{
+						int r = GetRand(2);
+						int t = pos[i];
+						pos[i] = pos[r];
+						pos[r] = t;
+					}
+
+					meteors[spawnedCount]->activate(pos[0], -400);
+					spawnedCount++;
+
+					meteors_2[spawnedCount]->activate(pos[1], -400);
+					spawnedCount++;
+
+					meteors[spawnedCount]->activate(pos[2], -400);
+					spawnedCount++;
+				}
+
+				if (spawnedCount + 2 < METEOR_MAX)
+				{
+					int pos[4] = { 700, 1000, 1300, 1600 };
+
+					for (int i = 0; i < 4; i++)
+					{
+						int r = GetRand(3);   
+						int t = pos[i];
+						pos[i] = pos[r];
+						pos[r] = t;
+					}
+					meteors[spawnedCount]->activate(pos[0], -400);
+					spawnedCount++;
+
+					meteors_2[spawnedCount]->activate(pos[1], -400);
+					spawnedCount++;
+
+					meteors[spawnedCount]->activate(pos[2], -400);
+					spawnedCount++;
+
+					meteors_2[spawnedCount]->activate(pos[3], -400);
+					spawnedCount++;
+				}
+			}
+		}
+
+		if (spawnedCount >= METEOR_MAX)
+		{
+			isSpawnActive = false;
+		}
+
+	}
+
+	if (mino != nullptr)
+	{
+		if (mino->CheckAndResetPoundFlag())
+		{
+			PlaySoundMem(zimenSE, DX_PLAYTYPE_BACK);
+
+			if (!isSpawnActive)
+			{
+				isSpawnActive = true;
+				spawnTimer = 0;
+				spawnedCount = 0;
+			}
+		}
+	}
+
 	if (knifeDelayTimer > 59)
 	{
 		knifeDelayTimer = 0;
@@ -245,6 +367,44 @@ void Stage2::Update(void)
 		}
 	}
 
+	if (knifeDelayTimer > 59)
+	{
+		knifeDelayTimer = 0;
+	}
+
+	if (knife->GetCutFlg() == false && knifeDelayTimer == 0)
+	{
+		prevShotKey = nowShotKey;
+		nowShotKey = CheckHitKey(KEY_INPUT_G);
+
+		if (prevShotKey == 0 && nowShotKey == 1 || isPadRtPressed)
+		{
+			if (player != nullptr && player->GetIsJumping() == false)
+			{
+				// プレイヤーの向きを取得
+				bool isRight = (player->GetPlayerDir() == static_cast<int>(AsoUtility::DIR::RIGHT));
+
+				if (isRight)
+				{
+					pPos.x += 32;
+					pPos.y -= 32;
+
+					knife->KnifeCreate(pPos);
+					knifeDelayTimer = KNIFE_DELAY_TIME;
+				}
+
+			}
+
+
+
+		}
+	}
+
+	if (hitEffect.active) {
+		hitEffect.timer--;
+		if (hitEffect.timer <= 0) hitEffect.active = false;
+	}
+
 	if (player != nullptr && player->GetAlive() <= 0)
 	{
 		StopSoundMem(bgm);
@@ -269,13 +429,20 @@ void Stage2::Draw(void)
 	int haikeiPosY = (Application::SCREEN_SIZE_HIG - HAIKEI_HIG) / 2;
 
 	// 描画背景
-	DrawGraph(0, 0, img, true);
+	DrawGraph(haikeiPosX, haikeiPosY, img, true);
+
 
 	player->Draw();
 
 	mino->Draw();
 
 	knife->Draw();
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		meteors[i]->Draw();
+		meteors_2[i]->Draw();
+	}
 
 	int hx = 10;
 	int hy = -30;
@@ -379,43 +546,23 @@ void Stage2::Draw(void)
 //開放処理
 bool Stage2::Release(void)
 {
-	if (DeleteGraph(img) == -1)return false;
+	DeleteGraph(img);
 
+	DeleteGraph(pauseimg);
 
-	if (sound != -1)
-	{
-		DeleteSoundMem(sound);
-	}
+	DeleteGraph(pl);
 
-	if (sound1 != -1)
-	{
-		DeleteSoundMem(sound1);
-	}
+	DeleteSoundMem(sound);
 
-	if (bgm != -1)
-	{
-		if (DeleteSoundMem(bgm) == -1) return false;
-	}
+	DeleteSoundMem(sound1);
 
-	if (attackSE != -1)
-	{
-		if (DeleteSoundMem(attackSE) == -1) return false;
-	}
+	DeleteSoundMem(bgm);
 
+	DeleteSoundMem(attackSE);
 
+	DeleteSoundMem(hidanSE);
 
-	if (hidanSE != -1)
-	{
-		if (DeleteSoundMem(hidanSE) == -1) return false;
-	}
-
-
-
-	if (hidanSE1 != -1)
-	{
-		if (DeleteSoundMem(hidanSE1) == -1) return false;
-	}
-
+	DeleteSoundMem(hidanSE1);
 
 	player->Release();
 	delete player;
@@ -428,6 +575,23 @@ bool Stage2::Release(void)
 	knife->Release();
 	delete knife;
 	knife = nullptr;
+
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		if (meteors[i] != nullptr)
+		{
+			meteors[i]->Release();
+			delete meteors[i];
+			meteors[i] = nullptr;
+		}
+
+		if (meteors_2[i] != nullptr)
+		{
+			meteors_2[i]->Release();
+			delete meteors_2[i];
+			meteors_2[i] = nullptr;
+		}
+	}
 
 	return true;
 }
@@ -442,6 +606,138 @@ void Stage2::Collision(void)
 	Vector2 pPos = player->GetPlayerPos();
 	Vector2 ePos = mino->GetEnemyPos();
 
+	if (knife != nullptr && knife->GetCutFlg() == true)
+	{
+		Vector2 knifePos = knife->GetKnifePos();
+		float knifeRadius = knife->GetRadius();
+
+		for (int i = 0; i < METEOR_MAX; i++)
+		{
+			if (meteors[i] != nullptr && meteors[i]->IsStoneActive())
+			{
+				Vector2 meteorPos = meteors[i]->GetStonePos();
+
+				float diffX = meteorPos.x - knifePos.x;
+				float diffY = meteorPos.y - knifePos.y;
+				float distanceSq = (diffX * diffX) + (diffY * diffY);
+
+				float combinedRadius = knifeRadius + meteors[i]->GetStoneRadius();
+				float combinedRadiusSq = combinedRadius * combinedRadius;
+
+				if (distanceSq < combinedRadiusSq)
+				{
+					meteors[i]->OnHit();
+					PlaySoundMem(sound, DX_PLAYTYPE_BACK);
+				}
+			}
+		}
+	}
+
+	// すべての石に対して、敵かプレイヤーのどちらか片方だけに当たるようにループを綺麗にまとめる
+	for (int i = 0; i < METEOR_MAX; i++)
+	{
+		if ((meteors[i] == nullptr || !meteors[i]->IsStoneActive()) &&
+			(meteors_2[i] == nullptr || !meteors_2[i]->IsStoneActive()))
+		{
+			continue;
+		}
+
+		Vector2 meteorsPos = meteors[i]->GetStonePos();
+		Vector2 meteors_2Pos = meteors_2[i]->GetStonePos();
+
+		if (mino != nullptr && mino->GetAlive())
+		{
+			Vector2 enemyPos = mino->GetEnemyPos();
+			float enemyRadius = 150.0f;
+
+			float diffX = meteorsPos.x - enemyPos.x;
+			float diffY = meteorsPos.y - enemyPos.y;
+			float distanceSq = (diffX * diffX) + (diffY * diffY);
+
+			float combinedRadius = enemyRadius + meteors[i]->GetStoneRadius();
+			float combinedRadiusSq = combinedRadius * combinedRadius;
+
+			if (distanceSq < combinedRadiusSq)
+			{
+				hitEffect.x = meteorsPos.x;
+				hitEffect.y = meteorsPos.y;
+				hitEffect.timer = 10; // 10フレームで消える設定
+				hitEffect.active = true;
+
+				mino->SetDamage(1);	// 敵にダメージ
+				meteors[i]->GameInit();  // 石を消す
+
+				PlaySoundMem(attackSE, DX_PLAYTYPE_BACK);
+
+				continue;              // この石は処理終了、次の石のループへ！
+
+			}
+		}
+
+		if (player != nullptr && player->GetHP() > 0)
+		{
+			Vector2 playerPos = player->GetPlayerPos();
+			float playerRadius = 37.0f;
+			float meteorRadius = 50.0f;
+
+			// meteor
+			Vector2 meteorPos = meteors[i]->GetStonePos();
+			float dx = meteorPos.x - playerPos.x;
+			float dy = meteorPos.y - playerPos.y;
+
+			if (dx * dx + dy * dy < (meteorRadius + playerRadius) * (meteorRadius + playerRadius))
+			{
+				if (player->GetDamageTimer() > 0)
+				{
+					continue;
+				}
+
+				if (player->GetInvincibleTime() > 0.0f)
+				{
+					// 無敵時間中は何もせずスキップ
+					continue;
+				}
+
+				player->SetDamage(1, Player::state::STONE);
+				meteors[i]->GameInit();
+
+
+				PlaySoundMem(hidanSE, DX_PLAYTYPE_BACK);
+
+
+				continue;           //この石は処理終了
+			}
+
+			// meteor_2
+			Vector2 meteorPos2 = meteors_2[i]->GetStonePos();
+			float dx2 = meteorPos2.x - playerPos.x;
+			float dy2 = meteorPos2.y - playerPos.y;
+
+			if (dx2 * dx2 + dy2 * dy2 < (meteorRadius + playerRadius) * (meteorRadius + playerRadius))
+			{
+				if (player->GetDamageTimer() > 0)
+				{
+					continue;
+				}
+
+				if (player->GetInvincibleTime() > 0.0f)
+				{
+					// 無敵時間中は何もせずスキップ
+					continue;
+				}
+
+				player->SetDamage(1, Player::state::STONE);
+				meteors_2[i]->GameInit();
+
+
+				PlaySoundMem(hidanSE, DX_PLAYTYPE_BACK);
+
+
+				continue;           //この石は処理終了
+			}
+		}
+	}
+
 	float diffX = pPos.x - ePos.x;
 	float diffY = pPos.y - ePos.y;
 
@@ -449,10 +745,6 @@ void Stage2::Collision(void)
 	{
 		player->SetDamage(1, Player::state::STONE);
 
-		if (mino->currentstate)
-		{
-
-		}
 
 		// 吹き飛ぶ方向を決定（敵より右にいれば右へ、左にいれば左へ)
 		float knockbackDir = (diffX > 0) ? 3.0f : -3.0f;
