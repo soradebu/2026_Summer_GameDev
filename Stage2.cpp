@@ -8,7 +8,6 @@
 #include "Meteor.h"
 
 
-
 Stage2::Stage2(void)
 {
 	img = -1;
@@ -35,7 +34,7 @@ Stage2::~Stage2(void)
 
 }
 
-//初期化処理(最初の一回のみ実行)
+// 初期化処理(最初の一回のみ実行)
 bool Stage2::SystemInit(void)
 {
 	player = new Player(this);
@@ -97,7 +96,7 @@ bool Stage2::SystemInit(void)
 
 }
 
-//ゲーム起動・再開時に必ず呼び出す処理o
+// ゲーム起動・再開時に必ず呼び出す処理o
 void Stage2::GameInit(void)
 {
 	player->GameInit();
@@ -133,7 +132,7 @@ void Stage2::GameInit(void)
 
 }
 
-//更新処理
+// 更新処理
 void Stage2::Update(void)
 {
 	static int prevPadInput = 0;
@@ -267,7 +266,7 @@ void Stage2::Update(void)
 			{
 				if (spawnedCount + 2 < METEOR_MAX)
 				{
-					int pos[3] = { 800, 1300, 1800 };
+					int pos[3] = { 1000, 1300, 1600 };
 
 					// シャッフル
 					for (int i = 0; i < 3; i++)
@@ -288,9 +287,9 @@ void Stage2::Update(void)
 					spawnedCount++;
 				}
 
-				if (spawnedCount + 2 < METEOR_MAX)
+				if (spawnedCount + 3 < METEOR_MAX + 1 && mino->HalfHp() == true)
 				{
-					int pos[4] = { 700, 1000, 1300, 1600 };
+					int pos[4] = { 1000, 1200, 1400, 1600 };
 
 					for (int i = 0; i < 4; i++)
 					{
@@ -543,7 +542,7 @@ void Stage2::Draw(void)
 
 }
 
-//開放処理
+// 開放処理
 bool Stage2::Release(void)
 {
 	DeleteGraph(img);
@@ -628,6 +627,7 @@ void Stage2::Collision(void)
 				{
 					meteors[i]->OnHit();
 					PlaySoundMem(sound, DX_PLAYTYPE_BACK);
+
 				}
 			}
 		}
@@ -648,16 +648,17 @@ void Stage2::Collision(void)
 		if (mino != nullptr && mino->GetAlive())
 		{
 			Vector2 enemyPos = mino->GetEnemyPos();
-			float enemyRadius = 150.0f;
+			float enemyRadius = 200.0f;
+			float meteorRadius = 100.0f;
 
-			float diffX = meteorsPos.x - enemyPos.x;
-			float diffY = meteorsPos.y - enemyPos.y;
-			float distanceSq = (diffX * diffX) + (diffY * diffY);
+			float dx = meteorsPos.x - enemyPos.x;
+			float dy = meteorsPos.y - enemyPos.y;
+			float distanceSq = (dx * dx) + (dy * dy);
 
 			float combinedRadius = enemyRadius + meteors[i]->GetStoneRadius();
 			float combinedRadiusSq = combinedRadius * combinedRadius;
 
-			if (distanceSq < combinedRadiusSq)
+			if (dx * dx + dy * dy < (meteorRadius + enemyRadius) * (meteorRadius + enemyRadius))
 			{
 				hitEffect.x = meteorsPos.x;
 				hitEffect.y = meteorsPos.y;
@@ -670,7 +671,6 @@ void Stage2::Collision(void)
 				PlaySoundMem(attackSE, DX_PLAYTYPE_BACK);
 
 				continue;              // この石は処理終了、次の石のループへ！
-
 			}
 		}
 
@@ -680,7 +680,6 @@ void Stage2::Collision(void)
 			float playerRadius = 37.0f;
 			float meteorRadius = 50.0f;
 
-			// meteor
 			Vector2 meteorPos = meteors[i]->GetStonePos();
 			float dx = meteorPos.x - playerPos.x;
 			float dy = meteorPos.y - playerPos.y;
@@ -708,7 +707,6 @@ void Stage2::Collision(void)
 				continue;           //この石は処理終了
 			}
 
-			// meteor_2
 			Vector2 meteorPos2 = meteors_2[i]->GetStonePos();
 			float dx2 = meteorPos2.x - playerPos.x;
 			float dy2 = meteorPos2.y - playerPos.y;

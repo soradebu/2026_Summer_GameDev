@@ -265,7 +265,7 @@ void EnemyMino::SetDamage(int dp)
 
 bool EnemyMino::HalfHp(void)
 {
-	if (hp >= 10)
+	if (hp <= 10)
 	{
 		return true;
 	}

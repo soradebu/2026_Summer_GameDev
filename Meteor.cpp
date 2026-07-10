@@ -48,9 +48,12 @@ void Meteor::Update(void)
 	Pos.y += speed.y;
 
 	//‰æ–ÊŠO‚Éo‚½‚çÎ‚ðÁ‹Ž‚·‚é
-	if (Pos.y > 800 || Pos.x > 1920)
+	if (Pos.y > 1000 || Pos.x > 1920)
 	{
+		angle += 135.0f;
+
 		active = false;
+
 	}
 
 }

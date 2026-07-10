@@ -8,8 +8,8 @@ class Meteor
 {
 public:
 
-	static constexpr int METEOR_HIG = 200;
-	static constexpr int METEOR_WID = 200;
+	static constexpr int METEOR_HIG = 150;
+	static constexpr int METEOR_WID = 150;
 
 	Meteor(SceneBase* scene);
 	~Meteor(void);
