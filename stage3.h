@@ -5,20 +5,20 @@
 #include "Vector2.h"
 #include "SceneBase.h"
 
-class Enemy;
+class EnemyMino;
 class Player;
 class Knife;
-class Fire;
-class Stone;
+class Meteor;
 
 class Stage3 : public SceneBase
 {
 
+
 public:
 	static constexpr int HAIKEI_WID = 1920;			// 背景画像の横サイズ
 	static constexpr int HAIKEI_HIG = 1080;			// 背景画像の縦サイズ
-	static constexpr int HAIKEI_MOVE_SPEED = 10;	// 背景の移動量
-	static constexpr int STONE_MAX = 8;
+
+	static constexpr int METEOR_MAX = 3;
 	static constexpr int KNIFE_DELAY_TIME = 60;
 
 	static constexpr int HP_WID = 640;			// 背景画像の横サイズ
@@ -44,7 +44,8 @@ public:
 
 	void Collision(void);
 
-	struct HitEffect {
+	struct HitEffect
+	{
 		float x, y;
 		int timer;
 		bool active = false;
@@ -52,13 +53,14 @@ public:
 
 private:
 
-	Player* player;                   //プレイヤークラスのインスタンスポインタ
-	Enemy* enemy;                     //エネミークラスのインスタンスのポインタ
-	Knife* knife;                     //ナイフクラスのインスタンスのポインタ
-	Fire* fire;                       //火クラスのインスタンスのポインタ
-	Stone* stones[STONE_MAX];         //石クラスのインスタンスのポインタ
+	Player* player;                   // プレイヤークラスのインスタンスポインタ
+	EnemyMino* mino;                  // エネミークラスのインスタンスのポインタ
+	Knife* knife;                     // ナイフクラスのインスタンスのポインタ
+	Meteor* meteors[METEOR_MAX];      // メテオクラスのインスタンスのポインタ
+	Meteor* meteors_2[METEOR_MAX];    // メテオクラスのインスタンスのポインタ
 
 	HitEffect hitEffect;             //エフェクトのポインタ
+
 
 	// 1. ゲームシーン内の細かい状態を定義
 	enum class SceneState
@@ -80,8 +82,6 @@ private:
 	int knifeDelayTimer;
 
 	int img;
-
-	int effectImg;
 
 	int pauseimg;				// ポーズ画
 	int pl;						// PLAY画像のハンドル番号
